@@ -9,5 +9,6 @@ import (
 var _ = Describe("Checker", func() {
 	It("counts ok lines", func() {
 		Expect(passphrase.Check([]string{"aa bb", "aa aa"})).To(Equal(1))
+		Expect(passphrase.Check([]string{"ab ba", "aa aa"})).To(Equal(0))
 	})
 })
