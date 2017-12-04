@@ -1,17 +1,18 @@
 package checksum
 
 func RowVal(input []int) int {
-	mn := 1 << 32
-	mx := 0
-	for _, n := range input {
-		if n < mn {
-			mn = n
-		}
-		if n > mx {
-			mx = n
+	for i, n := range input {
+		for j := i + 1; j < len(input); j++ {
+			mn, mx := n, input[j]
+			if mn > mx {
+				mn, mx = mx, mn
+			}
+			if mx%mn == 0 {
+				return mx / mn
+			}
 		}
 	}
-	return mx - mn
+	return 0
 }
 
 func Calc(input [][]int) int {
