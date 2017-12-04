@@ -33,4 +33,12 @@ var _ = Describe("Memory", func() {
 		Expect(memory.Distance(28)).To(Equal(3))
 	})
 
+	It("calcs weirdSum", func() {
+		Expect(memory.WeirdSum(1)).To(Equal(2))
+		Expect(memory.WeirdSum(2)).To(Equal(4))
+		Expect(memory.WeirdSum(4)).To(Equal(5))
+		Expect(memory.WeirdSum(5)).To(Equal(10))
+		Expect(memory.WeirdSum(747)).To(Equal(806))
+
+	})
 })
