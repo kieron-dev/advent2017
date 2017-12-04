@@ -9,8 +9,11 @@ import (
 var _ = Describe("Captcha", func() {
 	It("calcs captcha", func() {
 		Expect(captcha.Decode("")).To(Equal(0))
-		Expect(captcha.Decode("1122")).To(Equal(3))
-		Expect(captcha.Decode("1111")).To(Equal(4))
+		Expect(captcha.Decode("1212")).To(Equal(6))
+		Expect(captcha.Decode("1221")).To(Equal(0))
+		Expect(captcha.Decode("123425")).To(Equal(4))
+		Expect(captcha.Decode("123123")).To(Equal(12))
+		Expect(captcha.Decode("12131415")).To(Equal(4))
 	})
 
 })

@@ -8,16 +8,13 @@ func Decode(input string) int {
 	}
 
 	sum := 0
+	l := len(input)
 
-	for i := 0; i < len(input)-1; i++ {
-		if input[i] == input[i+1] {
+	for i := 0; i < l; i++ {
+		if input[i] == input[(i+l/2)%l] {
 			val, _ := strconv.Atoi(string(input[i]))
 			sum += val
 		}
-	}
-	if input[len(input)-1] == input[0] {
-		val, _ := strconv.Atoi(string(input[0]))
-		sum += val
 	}
 	return sum
 }
