@@ -9,12 +9,12 @@ import (
 
 var _ = Describe("Calc", func() {
 	It("calcs checksum", func() {
-		Expect(checksum.Calc([][]int{{1, 2, 3}})).To(Equal(2))
+		Expect(checksum.Calc([][]int{{2, 4}, {5, 9, 2, 8}})).To(Equal(6))
 	})
 })
 
 var _ = Describe("RowVal", func() {
 	It("calcs row val", func() {
-		Expect(checksum.RowVal([]int{1, 2, 3})).To(Equal(2))
+		Expect(checksum.RowVal([]int{5, 9, 2, 8})).To(Equal(4))
 	})
 })
