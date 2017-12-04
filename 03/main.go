@@ -15,5 +15,5 @@ func main() {
 		os.Exit(1)
 	}
 	num, _ := strconv.Atoi(os.Args[1])
-	fmt.Println(memory.Distance(num))
+	fmt.Println(memory.WeirdSum(num))
 }
