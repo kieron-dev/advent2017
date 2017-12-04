@@ -1,6 +1,9 @@
 package passphrase
 
-import "strings"
+import (
+	"sort"
+	"strings"
+)
 
 func Check(lines []string) int {
 	sum := 0
@@ -9,6 +12,8 @@ func Check(lines []string) int {
 		words := strings.Split(line, " ")
 		ok := true
 		for _, word := range words {
+
+			word = sortStr(word)
 			if used[word] {
 				ok = false
 				break
@@ -20,4 +25,18 @@ func Check(lines []string) int {
 		}
 	}
 	return sum
+}
+
+func sortStr(str string) string {
+	ints := []int{}
+	for _, r := range str {
+		ints = append(ints, int(r-'a'))
+	}
+
+	sort.Ints(ints)
+	res := ""
+	for _, i := range ints {
+		res += string('a' + i)
+	}
+	return res
 }
