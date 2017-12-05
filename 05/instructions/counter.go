@@ -7,7 +7,11 @@ func Count(steps []int) int {
 
 	for pos >= 0 && pos < l {
 		cur := steps[pos]
-		steps[pos]++
+		if cur > 2 {
+			steps[pos]--
+		} else {
+			steps[pos]++
+		}
 		pos += cur
 		c++
 	}
