@@ -6,16 +6,16 @@ import (
 )
 
 func ReallocFirstCyclePos(mem []int) int {
-	visited := map[string]bool{}
+	visited := map[string]int{}
 
 	i := 0
 	for {
 		key := getKey(mem)
-		_, ok := visited[key]
+		n, ok := visited[key]
 		if ok {
-			return i
+			return i - n
 		}
-		visited[key] = true
+		visited[key] = i
 		i++
 		realloc(mem)
 	}
