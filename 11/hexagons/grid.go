@@ -29,3 +29,14 @@ func Distance(steps []string) int {
 	return count
 
 }
+
+func Furthest(steps []string) int {
+	furthest := 0
+	for i := 1; i <= len(steps); i++ {
+		dist := Distance(steps[:i])
+		if dist > furthest {
+			furthest = dist
+		}
+	}
+	return furthest
+}
