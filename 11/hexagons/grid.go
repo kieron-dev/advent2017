@@ -5,7 +5,10 @@ func Distance(steps []string) int {
 	for _, s := range steps {
 		stepMap[s]++
 	}
+	return getDistance(stepMap)
+}
 
+func getDistance(stepMap map[string]int) int {
 	x, y := 0, 0
 
 	y += 2 * stepMap["n"]
@@ -31,9 +34,11 @@ func Distance(steps []string) int {
 }
 
 func Furthest(steps []string) int {
+	stepMap := map[string]int{}
 	furthest := 0
-	for i := 1; i <= len(steps); i++ {
-		dist := Distance(steps[:i])
+	for _, step := range steps {
+		stepMap[step]++
+		dist := getDistance(stepMap)
 		if dist > furthest {
 			furthest = dist
 		}
