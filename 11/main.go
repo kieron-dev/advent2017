@@ -25,5 +25,5 @@ func main() {
 	instructions := strings.Split(strings.TrimSpace(string(contents)), ",")
 
 	fmt.Println("Part1:", hexagons.Distance(instructions))
-	// fmt.Println("Part2:", hash.Compute2(contents, 256))
+	fmt.Println("Part2:", hexagons.Furthest(instructions))
 }
