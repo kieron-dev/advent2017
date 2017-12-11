@@ -31,4 +31,6 @@ func main() {
 	}
 
 	fmt.Println("Part1:", hash.Compute(instructions, 256))
+	part2Contents := append(contents, []byte{17, 31, 73, 47, 23}...)
+	fmt.Println("Part2:", hash.Compute2(part2Contents, 256))
 }
