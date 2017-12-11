@@ -14,7 +14,7 @@ var _ = Describe("Bowling Scores", func() {
 		command := exec.Command(cmd, "./input.txt")
 		session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
-		Eventually(session, 5).Should(gexec.Exit(0))
+		Eventually(session).Should(gexec.Exit(0))
 		Expect(session).To(gbytes.Say("An incorrect value, so I can see the real result"))
 	})
 
