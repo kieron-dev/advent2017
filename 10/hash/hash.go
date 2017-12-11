@@ -39,6 +39,7 @@ func Compute(instructions []int, listLen int) int {
 }
 
 func Compute2(instructions []byte, listLen int) string {
+	instructions = append(instructions, []byte{17, 31, 73, 47, 23}...)
 	list := []int{}
 	for i := 0; i < listLen; i++ {
 		list = append(list, i)
@@ -75,7 +76,7 @@ func xorIt(list []int) []int {
 func toHex(list []int) string {
 	ret := ""
 	for _, i := range list {
-		ret += fmt.Sprintf("%0x", i)
+		ret += fmt.Sprintf("%02x", i)
 	}
 	return ret
 }

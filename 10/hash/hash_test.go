@@ -48,4 +48,12 @@ var _ = Describe("Hash", func() {
 	It("computes hash", func() {
 		Expect(hash.Compute([]int{3, 4, 1, 5}, 5)).To(Equal(12))
 	})
+
+	It("computes full hash", func() {
+		Expect(hash.Compute2([]byte{}, 256)).To(Equal("a2582a3a0e66e6e86e3812dcb672a272"))
+		Expect(hash.Compute2([]byte(`AoC 2017`), 256)).To(Equal("33efeb34ea91902bb2f59c9920caa6cd"))
+		Expect(hash.Compute2([]byte(`1,2,3`), 256)).To(Equal("3efbe78a8d82f29979031a4aa0b16a9d"))
+		Expect(hash.Compute2([]byte(`1,2,4`), 256)).To(Equal("63960835bcdc130f0b66d7ff4f6a5a8e"))
+	})
+
 })
