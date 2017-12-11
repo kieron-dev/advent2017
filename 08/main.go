@@ -21,7 +21,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	registers := registers.Set{}
+	registers := registers.NewSet()
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
@@ -31,5 +31,6 @@ func main() {
 
 	registers.Process()
 
-	fmt.Println(registers.GetMaxRegister())
+	fmt.Println("Part1:", registers.GetMaxRegister())
+	fmt.Println("Part2:", registers.MaxVal)
 }
