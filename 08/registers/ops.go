@@ -87,23 +87,7 @@ func ParseInstruction(line string) Instruction {
 
 func (s *Set) Process() {
 	for _, instr := range s.Instructions {
-		cond := false
-		toComp := s.Registers[instr.CondTarget]
-		switch instr.Comparison {
-		case GT:
-			cond = toComp > instr.CompAmt
-		case GTE:
-			cond = toComp >= instr.CompAmt
-		case LT:
-			cond = toComp < instr.CompAmt
-		case LTE:
-			cond = toComp <= instr.CompAmt
-		case EQ:
-			cond = toComp == instr.CompAmt
-		case NEQ:
-			cond = toComp != instr.CompAmt
-		}
-		if cond {
+		if s.EvalCondition(instr) {
 			switch instr.Op {
 			case INC:
 				s.Registers[instr.Register] += instr.Amt
@@ -114,6 +98,26 @@ func (s *Set) Process() {
 		if s.Registers[instr.Register] > s.MaxVal {
 			s.MaxVal = s.Registers[instr.Register]
 		}
+	}
+}
+
+func (s *Set) EvalCondition(instr Instruction) bool {
+	toComp := s.Registers[instr.CondTarget]
+	switch instr.Comparison {
+	case GT:
+		return toComp > instr.CompAmt
+	case GTE:
+		return toComp >= instr.CompAmt
+	case LT:
+		return toComp < instr.CompAmt
+	case LTE:
+		return toComp <= instr.CompAmt
+	case EQ:
+		return toComp == instr.CompAmt
+	case NEQ:
+		return toComp != instr.CompAmt
+	default:
+		return false
 	}
 }
 
