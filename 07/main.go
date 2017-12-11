@@ -27,18 +27,19 @@ func main() {
 
 	treeMap := map[string]*tree.Node{}
 
+	var node *tree.Node
 	for scanner.Scan() {
 		line := scanner.Text()
 		name := getName(line)
 		weight := getWeight(line)
-		node := tree.NewNode(name, weight)
+		node = tree.NewNode(name, weight)
 		for _, childName := range getChildren(line) {
 			node.AddChild(childName)
 		}
 		treeMap[name] = node
 	}
 
-	fmt.Println(tree.GetRoot(treeMap))
+	fmt.Println(tree.GetWrongWeight(treeMap, node))
 }
 
 func getName(line string) string {
