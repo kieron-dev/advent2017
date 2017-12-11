@@ -12,5 +12,9 @@ var _ = Describe("Hexagons", func() {
 		Expect(hexagons.Distance([]string{"s", "n"})).To(Equal(0))
 		Expect(hexagons.Distance([]string{"ne", "nw"})).To(Equal(1))
 		Expect(hexagons.Distance([]string{"ne", "nw", "n", "sw", "se"})).To(Equal(1))
+
+		Expect(hexagons.Distance([]string{"ne", "sw"})).To(Equal(0))
+		Expect(hexagons.Distance([]string{"ne", "sw", "sw"})).To(Equal(1))
+		Expect(hexagons.Distance([]string{"n", "ne", "se"})).To(Equal(2))
 	})
 })
