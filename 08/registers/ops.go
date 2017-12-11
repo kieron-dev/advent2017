@@ -26,6 +26,13 @@ const (
 type Set struct {
 	Registers    map[string]int
 	Instructions []Instruction
+	MaxVal       int
+}
+
+func NewSet() *Set {
+	set := Set{}
+	set.Registers = map[string]int{}
+	return &set
 }
 
 type Instruction struct {
@@ -37,7 +44,7 @@ type Instruction struct {
 	CompAmt    int
 }
 
-func (s Set) AddInstruction(line string) {
+func (s *Set) AddInstruction(line string) {
 	instr := ParseInstruction(line)
 	s.Instructions = append(s.Instructions, instr)
 	s.Registers[instr.Register] = 0
@@ -78,7 +85,7 @@ func ParseInstruction(line string) Instruction {
 	return instr
 }
 
-func (s Set) Process() {
+func (s *Set) Process() {
 	for _, instr := range s.Instructions {
 		cond := false
 		toComp := s.Registers[instr.CondTarget]
@@ -104,10 +111,13 @@ func (s Set) Process() {
 				s.Registers[instr.Register] -= instr.Amt
 			}
 		}
+		if s.Registers[instr.Register] > s.MaxVal {
+			s.MaxVal = s.Registers[instr.Register]
+		}
 	}
 }
 
-func (s Set) GetMaxRegister() int {
+func (s *Set) GetMaxRegister() int {
 	max := 0
 	for _, val := range s.Registers {
 		if val > max {
