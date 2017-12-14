@@ -34,8 +34,12 @@ func (g *Graph) LinkNodes(id int, children []int) {
 }
 
 func (g *Graph) Size(containing int) int {
-	visited := map[int]bool{}
-	queue := []int{containing}
+	visited := map[*Node]bool{}
+	start := g.nodes[containing]
+	if start == nil {
+		return 0
+	}
+	queue := []*Node{start}
 	count := 0
 
 	for len(queue) > 0 {
@@ -46,25 +50,22 @@ func (g *Graph) Size(containing int) int {
 		}
 		visited[next] = true
 
-		node := g.nodes[next]
 		count++
-		for _, c := range node.children {
-			queue = append(queue, c.id)
-		}
+		queue = append(queue, next.children...)
 	}
 	return count
 }
 
 func (g *Graph) Groups() int {
-	visited := map[int]bool{}
+	visited := map[*Node]bool{}
 	count := 0
-	for id, _ := range g.nodes {
-		if visited[id] {
+	for _, node := range g.nodes {
+		if visited[node] {
 			continue
 		}
 		count++
 
-		queue := []int{id}
+		queue := []*Node{node}
 
 		for len(queue) > 0 {
 			next := queue[0]
@@ -74,10 +75,7 @@ func (g *Graph) Groups() int {
 			}
 			visited[next] = true
 
-			node := g.nodes[next]
-			for _, c := range node.children {
-				queue = append(queue, c.id)
-			}
+			queue = append(queue, next.children...)
 		}
 	}
 	return count
