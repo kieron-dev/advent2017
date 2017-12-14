@@ -34,7 +34,7 @@ func main() {
 			childId, _ := strconv.Atoi(c)
 			children = append(children, childId)
 		}
-		g.AddNode(id, children)
+		g.LinkNodes(id, children)
 	}
 
 	fmt.Println("Part1:", g.Size(0))

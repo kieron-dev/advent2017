@@ -1,12 +1,12 @@
 package graph
 
 type Graph struct {
-	nodes map[int]Node
+	nodes map[int]*Node
 }
 
 func New() *Graph {
 	g := Graph{}
-	g.nodes = map[int]Node{}
+	g.nodes = map[int]*Node{}
 	return &g
 }
 
@@ -15,15 +15,25 @@ type Node struct {
 	children []int
 }
 
-func (g *Graph) AddNode(id int, children []int) {
-	g.nodes[id] = Node{id: id, children: children}
-	// for _, child := range children {
-	// 	childNode, ok := g.nodes[child]
-	// 	if !ok {
-	// 		g.nodes[child] = Node{id: child}
-	// 	}
-	// 	g.nodes[child].children = append(g.nodes[child].children, []int{id})
-	// }
+func (g *Graph) LinkNodes(id int, children []int) {
+	var (
+		parentNode *Node
+		ok         bool
+	)
+	if parentNode, ok = g.nodes[id]; !ok {
+		parentNode = &Node{id: id, children: children}
+		g.nodes[id] = &Node{id: id, children: children}
+	}
+	parentNode.children = append(parentNode.children, children...)
+
+	for _, child := range children {
+		childNode, ok := g.nodes[child]
+		if !ok {
+			childNode = &Node{id: child}
+			g.nodes[child] = childNode
+		}
+		childNode.children = append(childNode.children, id)
+	}
 }
 
 func (g *Graph) Size(containing int) int {
@@ -50,7 +60,7 @@ func (g *Graph) Groups() int {
 	visited := map[int]bool{}
 	count := 0
 	for id, _ := range g.nodes {
-		if _, ok := visited[id]; ok {
+		if visited[id] {
 			continue
 		}
 		count++
@@ -60,12 +70,12 @@ func (g *Graph) Groups() int {
 		for len(queue) > 0 {
 			next := queue[0]
 			queue = queue[1:]
-			if _, ok := visited[next]; ok {
+			if visited[next] {
 				continue
 			}
 			visited[next] = true
 
-			node := g.nodes[next]
+			node := *g.nodes[next]
 			queue = append(queue, node.children...)
 		}
 	}
