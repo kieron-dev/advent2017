@@ -47,7 +47,7 @@ var _ = Describe("Graph", func() {
 		Expect(g.Size(10)).To(Equal(2))
 	})
 
-	It("reverse links are now implicit", func() {
+	It("reverse links are actually implicit", func() {
 		g := graph.New()
 		g.LinkNodes(0, []int{1, 2, 3})
 		g.LinkNodes(1, []int{4})
@@ -66,5 +66,8 @@ var _ = Describe("Graph", func() {
 
 		g.LinkNodes(10, []int{11})
 		Expect(g.Groups()).To(Equal(2))
+
+		g.LinkNodes(11, []int{3})
+		Expect(g.Groups()).To(Equal(1))
 	})
 })
