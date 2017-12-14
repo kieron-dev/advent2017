@@ -12,19 +12,15 @@ func New() *Graph {
 
 type Node struct {
 	id       int
-	children []int
+	children []*Node
 }
 
 func (g *Graph) LinkNodes(id int, children []int) {
-	var (
-		parentNode *Node
-		ok         bool
-	)
-	if parentNode, ok = g.nodes[id]; !ok {
-		parentNode = &Node{id: id, children: children}
-		g.nodes[id] = &Node{id: id, children: children}
+	parentNode, ok := g.nodes[id]
+	if !ok {
+		parentNode = &Node{id: id}
+		g.nodes[id] = parentNode
 	}
-	parentNode.children = append(parentNode.children, children...)
 
 	for _, child := range children {
 		childNode, ok := g.nodes[child]
@@ -32,7 +28,8 @@ func (g *Graph) LinkNodes(id int, children []int) {
 			childNode = &Node{id: child}
 			g.nodes[child] = childNode
 		}
-		childNode.children = append(childNode.children, id)
+		childNode.children = append(childNode.children, parentNode)
+		parentNode.children = append(parentNode.children, childNode)
 	}
 }
 
@@ -51,7 +48,9 @@ func (g *Graph) Size(containing int) int {
 
 		node := g.nodes[next]
 		count++
-		queue = append(queue, node.children...)
+		for _, c := range node.children {
+			queue = append(queue, c.id)
+		}
 	}
 	return count
 }
@@ -75,8 +74,10 @@ func (g *Graph) Groups() int {
 			}
 			visited[next] = true
 
-			node := *g.nodes[next]
-			queue = append(queue, node.children...)
+			node := g.nodes[next]
+			for _, c := range node.children {
+				queue = append(queue, c.id)
+			}
 		}
 	}
 	return count
