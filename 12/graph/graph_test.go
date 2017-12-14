@@ -56,6 +56,17 @@ var _ = Describe("Graph", func() {
 		Expect(g.Size(10)).To(Equal(2))
 	})
 
+	It("An empty tree is empty", func() {
+		g := graph.New()
+		g.LinkNodes(0, []int{1, 2, 3})
+		Expect(g.Size(4)).To(Equal(0))
+	})
+
+	It("counts an empty forest", func() {
+		g := graph.New()
+		Expect(g.Groups()).To(Equal(0))
+	})
+
 	It("counts trees", func() {
 		g := graph.New()
 		g.LinkNodes(0, []int{1, 2, 3})
