@@ -24,5 +24,5 @@ func main() {
 	input := strings.TrimSpace(string(contents))
 
 	fmt.Println("Part1:", defrag.CountUsed(input))
-	// fmt.Println("Part2:", firewall.MinDelay(config))
+	fmt.Println("Part2:", defrag.CountBlocks(input))
 }

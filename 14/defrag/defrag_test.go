@@ -20,4 +20,12 @@ var _ = Describe("Defrag", func() {
 	It("gets total right", func() {
 		Expect(defrag.CountUsed("flqrgnkx")).To(Equal(8108))
 	})
+
+	It("converts hex to bin", func() {
+		Expect(defrag.HexToBin("ff")).To(Equal("11111111"))
+	})
+
+	It("counts blocks", func() {
+		Expect(defrag.CountBlocks("flqrgnkx")).To(Equal(1242))
+	})
 })
