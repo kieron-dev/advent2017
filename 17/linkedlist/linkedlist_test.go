@@ -8,36 +8,42 @@ import (
 
 var _ = Describe("Linkedlist", func() {
 	It("can create a new list", func() {
-		li := linkedlist.NewCiruclarList(0)
-		Expect(li.Next).To(Equal(li))
+		list := linkedlist.NewCiruclarList(0)
+		Expect(list.CurPos.Next).To(Equal(list.CurPos))
 	})
 
 	It("can insert after an item", func() {
-		li0 := linkedlist.NewCiruclarList(0)
-		li1 := li0.Insert(1)
-		Expect(li0.Next).To(Equal(li1))
-		Expect(li1.Next).To(Equal(li0))
+		list := linkedlist.NewCiruclarList(0)
+		list.Insert(1)
+		Expect(list.Start.Next).To(Equal(list.CurPos))
+		Expect(list.CurPos.Next).To(Equal(list.Start))
 	})
 
 	It("can skip N items", func() {
-		i0 := linkedlist.NewCiruclarList(0)
-		i1 := i0.Insert(1)
-		i2 := i1.Insert(2)
-		i := i2.Advance(1)
-		Expect(i).To(Equal(i0))
-		i = i2.Advance(5)
-		Expect(i).To(Equal(i1))
+		list := linkedlist.NewCiruclarList(0)
+		list.Insert(1)
+		list.Insert(2)
+		list.Advance(1)
+		Expect(list.CurPos.Val).To(Equal(0))
+		list.Advance(5)
+		Expect(list.CurPos.Val).To(Equal(2))
 	})
 
 	It("can skip and insert", func() {
-		li := linkedlist.NewCiruclarList(0)
-		next := li.SkipAndInsert(3, 2017)
-		Expect(next.Val).To(Equal(638))
+		l := linkedlist.NewCiruclarList(0)
+		l.SkipAndInsert(3, 2017)
+		Expect(l.CurPos.Next.Val).To(Equal(638))
 	})
 
 	It("gives the answer to part 1", func() {
-		li := linkedlist.NewCiruclarList(0)
-		next := li.SkipAndInsert(328, 2017)
-		Expect(next.Val).To(Equal(-1))
+		l := linkedlist.NewCiruclarList(0)
+		l.SkipAndInsert(328, 2017)
+		Expect(l.CurPos.Next.Val).To(Equal(1670))
+	})
+
+	It("gives the answer to part 2", func() {
+		l := linkedlist.NewCiruclarList(0)
+		l.SkipAndInsert(328, 5e7)
+		Expect(l.Start.Next.Val).To(Equal(-1))
 	})
 })
