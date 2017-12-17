@@ -21,19 +21,19 @@ var _ = Describe("Dance", func() {
 	It("spins N dancers", func() {
 		d := dance.New(8)
 		d.Spin(3)
-		Expect(d.Print()).To(Equal("fghabcde"))
+		Expect(d.String()).To(Equal("fghabcde"))
 	})
 
 	It("exchanges dancers", func() {
 		d := dance.New(5)
 		d.Exchange(3, 4)
-		Expect(d.Print()).To(Equal("abced"))
+		Expect(d.String()).To(Equal("abced"))
 	})
 
 	It("swaps dancers", func() {
 		d := dance.New(5)
 		d.Swap('a', 'e')
-		Expect(d.Print()).To(Equal("ebcda"))
+		Expect(d.String()).To(Equal("ebcda"))
 	})
 
 	It("does combo correctly", func() {
@@ -41,25 +41,25 @@ var _ = Describe("Dance", func() {
 		d.Spin(1)
 		d.Exchange(3, 4)
 		d.Swap('e', 'b')
-		Expect(d.Print()).To(Equal("baedc"))
+		Expect(d.String()).To(Equal("baedc"))
 	})
 
 	It("recognises spin move", func() {
 		d := dance.New(5)
 		d.Move("s3")
-		Expect(d.Print()).To(Equal("cdeab"))
+		Expect(d.String()).To(Equal("cdeab"))
 	})
 
 	It("recognises exchange move", func() {
 		d := dance.New(16)
 		d.Move("x2/15")
-		Expect(d.Print()).To(Equal("abpdefghijklmnoc"))
+		Expect(d.String()).To(Equal("abpdefghijklmnoc"))
 	})
 
 	It("recognises swap move", func() {
 		d := dance.New(16)
 		d.Move("pc/p")
-		Expect(d.Print()).To(Equal("abpdefghijklmnoc"))
+		Expect(d.String()).To(Equal("abpdefghijklmnoc"))
 	})
 
 	It("correctly does move combo", func() {
@@ -67,13 +67,13 @@ var _ = Describe("Dance", func() {
 		d.Move("s1")
 		d.Move("x3/4")
 		d.Move("pe/b")
-		Expect(d.Print()).To(Equal("baedc"))
+		Expect(d.String()).To(Equal("baedc"))
 	})
 
 	It("processes a slice of moves", func() {
 		d := dance.New(5)
 		d.ProcessMoves([]string{"s1", "x3/4", "pe/b"})
-		Expect(d.Print()).To(Equal("baedc"))
+		Expect(d.String()).To(Equal("baedc"))
 	})
 
 	It("recognises new dancers as orig order", func() {
