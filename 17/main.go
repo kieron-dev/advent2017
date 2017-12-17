@@ -27,7 +27,7 @@ func main() {
 	moves := strings.Split(contents, ",")
 	d.ProcessMoves(moves)
 
-	fmt.Println("Part1:", d.Print())
+	fmt.Println("Part1:", d.String())
 
 	i := 1
 	for !d.IsOriginalOrder() {
@@ -41,5 +41,5 @@ func main() {
 	for i := 0; i < aBillion; i++ {
 		d.ProcessMoves(moves)
 	}
-	fmt.Println("Part2:", d.Print())
+	fmt.Println("Part2:", d.String())
 }

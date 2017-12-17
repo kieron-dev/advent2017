@@ -46,7 +46,7 @@ func (d Dancers) Swap(a, b rune) {
 	d[b] = apos
 }
 
-func (d Dancers) Print() string {
+func (d Dancers) String() string {
 	list := make([]rune, len(d))
 	for k, v := range d {
 		list[v] = k
