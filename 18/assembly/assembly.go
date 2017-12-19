@@ -1,22 +1,36 @@
 package assembly
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
+	"sync"
+	"sync/atomic"
 )
 
 type Machine struct {
 	registers    map[rune]int
 	instructions []string
 	ptr          int
-	lastVal      int
+	rcvChan      chan int
+	sndChan      chan int
+	sndCount     int32
+	idx          int
 }
 
-func NewMachine() *Machine {
+func NewMachine(idx int, sndChan, rcvChan chan int) *Machine {
 	m := Machine{}
 	m.initialiseRegisters()
+	m.registers['p'] = idx
+	m.idx = idx
 	m.instructions = []string{}
+	m.sndChan = sndChan
+	m.rcvChan = rcvChan
 	return &m
+}
+
+func (m *Machine) GetCount() int32 {
+	return m.sndCount
 }
 
 func (m *Machine) initialiseRegisters() {
@@ -33,18 +47,11 @@ func (m *Machine) AppendInstruction(instr string) {
 
 func (m *Machine) Run() {
 	for m.ptr < len(m.instructions) {
-		exit := m.Execute(m.instructions[m.ptr])
-		if exit {
-			break
-		}
+		m.Execute(m.instructions[m.ptr])
 	}
 }
 
-func (m *Machine) RecoverVal() int {
-	return m.lastVal
-}
-
-func (m *Machine) Execute(instr string) bool {
+func (m *Machine) Execute(instr string) {
 	words := strings.Split(instr, " ")
 	switch words[0] {
 	case "set":
@@ -69,13 +76,14 @@ func (m *Machine) Execute(instr string) bool {
 		m.ptr++
 	case "snd":
 		num := m.getNum(words[1])
-		m.lastVal = num
+		m.sndChan <- num
+		c := atomic.AddInt32(&m.sndCount, 1)
+		fmt.Println("sending", m.idx, c)
 		m.ptr++
 	case "rcv":
-		num := m.getNum(words[1])
-		if num != 0 {
-			return true
-		}
+		reg := getReg(words[1])
+		num := <-m.rcvChan
+		m.registers[reg] = num
 		m.ptr++
 	case "jgz":
 		cond := m.getNum(words[1])
@@ -88,7 +96,6 @@ func (m *Machine) Execute(instr string) bool {
 	default:
 		panic("unknown instruction: " + instr)
 	}
-	return false
 }
 
 func (m *Machine) GetRegister(r rune) int {
@@ -111,4 +118,16 @@ func (m *Machine) getNum(s string) int {
 		panic(err)
 	}
 	return val
+}
+
+func RunMachines(machines []*Machine) {
+	var wg sync.WaitGroup
+	wg.Add(len(machines))
+	for _, m := range machines {
+		go func(machine *Machine) {
+			machine.Run()
+			wg.Done()
+		}(m)
+	}
+	wg.Wait()
 }
