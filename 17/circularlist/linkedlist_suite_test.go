@@ -1,4 +1,4 @@
-package linkedlist_test
+package circularlist_test
 
 import (
 	. "github.com/onsi/ginkgo"
