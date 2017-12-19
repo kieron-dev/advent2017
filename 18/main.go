@@ -22,15 +22,21 @@ func main() {
 	}
 
 	scanner := bufio.NewScanner(file)
-	m := assembly.NewMachine()
+	ch1 := make(chan int, 1000)
+	ch2 := make(chan int, 1000)
+	m1 := assembly.NewMachine(0, ch2, ch1)
+	m2 := assembly.NewMachine(1, ch1, ch2)
 
 	for scanner.Scan() {
 		instr := scanner.Text()
-		m.AppendInstruction(instr)
+		m1.AppendInstruction(instr)
+		m2.AppendInstruction(instr)
 	}
 
-	m.Run()
+	assembly.RunMachines([]*assembly.Machine{m1, m2})
 
-	fmt.Println("Part1:", m.RecoverVal())
+	fmt.Println("Part2:", m2.GetCount())
+
+	// fmt.Println("Part1:", m.RecoverVal())
 	// fmt.Println("Part2:", firewall.MinDelay(config))
 }
