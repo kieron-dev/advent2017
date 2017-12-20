@@ -64,9 +64,17 @@ func (m *Machine) AppendInstruction(instr string) {
 }
 
 func (m *Machine) Run() {
-	for !m.waiting && m.ptr < len(m.instructions) {
+	for m.isActive() {
 		m.Execute(m.instructions[m.ptr])
 	}
+}
+
+func (m *Machine) isActive() bool {
+	return !m.waiting && !m.isFinished()
+}
+
+func (m *Machine) isFinished() bool {
+	return m.ptr >= len(m.instructions)
 }
 
 func (m *Machine) Execute(instr string) {
@@ -148,7 +156,11 @@ func RunMachines(machines []*Machine) {
 	for !m1.waiting || !m2.waiting {
 		m1.Run()
 		m2.Run()
+		if m1.isFinished() && m2.isFinished() {
+			fmt.Println("Normal exit")
+			break
+		}
 	}
 
-	fmt.Println("Exit with 2nd count:", machines[1].sndCount)
+	fmt.Println("Sends from 2nd machine:", machines[1].sndCount)
 }
