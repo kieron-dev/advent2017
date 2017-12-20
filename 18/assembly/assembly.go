@@ -1,35 +1,53 @@
 package assembly
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
-	"sync"
-	"sync/atomic"
 )
 
 type Machine struct {
 	registers    map[rune]int
 	instructions []string
 	ptr          int
-	rcvChan      chan int
-	sndChan      chan int
-	sndCount     int32
+	rcvQueue     []int
+	sndCount     int
 	idx          int
+	partner      *Machine
+	waiting      bool
 }
 
-func NewMachine(idx int, sndChan, rcvChan chan int) *Machine {
+func NewMachine(idx int) *Machine {
 	m := Machine{}
 	m.initialiseRegisters()
 	m.registers['p'] = idx
 	m.idx = idx
 	m.instructions = []string{}
-	m.sndChan = sndChan
-	m.rcvChan = rcvChan
+	m.rcvQueue = []int{}
 	return &m
 }
 
-func (m *Machine) GetCount() int32 {
+func (m *Machine) send(num int) {
+	m.partner.rcvQueue = append(m.partner.rcvQueue, num)
+	m.partner.waiting = false
+}
+
+func (m *Machine) rcvNum() (int, error) {
+	if len(m.rcvQueue) == 0 {
+		return 0, errors.New("waiting")
+	}
+	num := m.rcvQueue[0]
+	m.rcvQueue = m.rcvQueue[1:]
+	return num, nil
+}
+
+func (m *Machine) Duet(other *Machine) {
+	m.partner = other
+	other.partner = m
+}
+
+func (m *Machine) GetCount() int {
 	return m.sndCount
 }
 
@@ -46,7 +64,7 @@ func (m *Machine) AppendInstruction(instr string) {
 }
 
 func (m *Machine) Run() {
-	for m.ptr < len(m.instructions) {
+	for !m.waiting && m.ptr < len(m.instructions) {
 		m.Execute(m.instructions[m.ptr])
 	}
 }
@@ -76,15 +94,19 @@ func (m *Machine) Execute(instr string) {
 		m.ptr++
 	case "snd":
 		num := m.getNum(words[1])
-		m.sndChan <- num
-		c := atomic.AddInt32(&m.sndCount, 1)
-		fmt.Println("sending", m.idx, c)
+		m.send(num)
+		m.sndCount++
 		m.ptr++
 	case "rcv":
 		reg := getReg(words[1])
-		num := <-m.rcvChan
-		m.registers[reg] = num
-		m.ptr++
+		num, err := m.rcvNum()
+		if err != nil {
+			m.waiting = true
+		} else {
+			m.waiting = false
+			m.registers[reg] = num
+			m.ptr++
+		}
 	case "jgz":
 		cond := m.getNum(words[1])
 		num := m.getNum(words[2])
@@ -121,13 +143,12 @@ func (m *Machine) getNum(s string) int {
 }
 
 func RunMachines(machines []*Machine) {
-	var wg sync.WaitGroup
-	wg.Add(len(machines))
-	for _, m := range machines {
-		go func(machine *Machine) {
-			machine.Run()
-			wg.Done()
-		}(m)
+	m1 := machines[0]
+	m2 := machines[1]
+	for !m1.waiting || !m2.waiting {
+		m1.Run()
+		m2.Run()
 	}
-	wg.Wait()
+
+	fmt.Println("Exit with 2nd count:", machines[1].sndCount)
 }

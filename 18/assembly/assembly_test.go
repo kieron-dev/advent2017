@@ -13,7 +13,7 @@ var _ = Describe("Assembly", func() {
 		)
 
 		BeforeEach(func() {
-			m = assembly.NewMachine(0, nil, nil)
+			m = assembly.NewMachine(0)
 		})
 
 		Context("basic operations", func() {
@@ -83,34 +83,19 @@ var _ = Describe("Assembly", func() {
 	Context("sending and receiving", func() {
 
 		var (
-			ch1 chan int
-			ch2 chan int
-			m1  *assembly.Machine
-			m2  *assembly.Machine
+			m1 *assembly.Machine
+			m2 *assembly.Machine
 		)
 
 		BeforeEach(func() {
-			ch1 = make(chan int, 1000)
-			ch2 = make(chan int, 1000)
-			m1 = assembly.NewMachine(0, ch2, ch1)
-			m2 = assembly.NewMachine(1, ch1, ch2)
+			m1 = assembly.NewMachine(0)
+			m2 = assembly.NewMachine(1)
+			m1.Duet(m2)
 		})
 
 		It("sets up machines with correct IDs", func() {
 			Expect(m1.GetRegister('p')).To(Equal(0))
 			Expect(m2.GetRegister('p')).To(Equal(1))
-		})
-
-		It("snd writes to the correct channel", func() {
-			m1.Execute("set a 12")
-			m1.Execute("snd a")
-			Eventually(ch2).Should(Receive(Equal(12)))
-		})
-
-		It("will store from channel into correct register", func() {
-			ch1 <- 13
-			m1.Execute("rcv x")
-			Expect(m1.GetRegister('x')).To(Equal(13))
 		})
 
 		It("will send from one machine to the other", func() {
@@ -130,7 +115,7 @@ var _ = Describe("Assembly", func() {
 			Expect(m1.GetCount()).To(Equal(1))
 		})
 
-		FIt("correctly does example", func() {
+		It("correctly does example", func() {
 			for _, s := range []string{
 				"snd 1",
 				"snd 2",
