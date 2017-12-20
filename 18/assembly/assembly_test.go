@@ -115,7 +115,20 @@ var _ = Describe("Assembly", func() {
 			Expect(m1.GetCount()).To(Equal(1))
 		})
 
-		It("correctly does example", func() {
+		It("correctly does normal exit", func() {
+			for _, s := range []string{
+				"snd 1",
+				"rcv a",
+			} {
+				m1.AppendInstruction(s)
+				m2.AppendInstruction(s)
+			}
+
+			assembly.RunMachines([]*assembly.Machine{m1, m2})
+			Expect(m2.GetCount()).To(Equal(1))
+		})
+
+		It("correctly does example with deadlock", func() {
 			for _, s := range []string{
 				"snd 1",
 				"snd 2",
@@ -129,8 +142,8 @@ var _ = Describe("Assembly", func() {
 				m2.AppendInstruction(s)
 			}
 
-			go assembly.RunMachines([]*assembly.Machine{m1, m2})
-			Eventually(m2.GetCount).Should(Equal(3))
+			assembly.RunMachines([]*assembly.Machine{m1, m2})
+			Expect(m2.GetCount()).To(Equal(3))
 		})
 
 	})
