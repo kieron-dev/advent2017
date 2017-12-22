@@ -49,14 +49,14 @@ func (m *Map) CurDirection() Point {
 	return m.curDir
 }
 
-func (m *Map) CharAt(p Point) byte {
+func (m *Map) charAt(p Point) byte {
 	if p.r < 0 || p.r >= len(m.rows) || p.c < 0 || p.c >= len(m.rows[p.r]) {
 		return ' '
 	}
 	return m.rows[p.r][p.c]
 }
 
-func (m *Map) GetLeftRightRelativeDirections() []Point {
+func (m *Map) getLeftRightRelativeDirections() []Point {
 	if m.curDir == Up || m.curDir == Down {
 		return []Point{Left, Right}
 	}
@@ -65,16 +65,16 @@ func (m *Map) GetLeftRightRelativeDirections() []Point {
 
 func (m *Map) Step() bool {
 	next := m.curPos.Add(m.curDir)
-	nextChar := m.CharAt(next)
+	nextChar := m.charAt(next)
 	if nextChar != ' ' {
 		m.curPos = next
 		m.recordChar(nextChar)
 		m.steps++
 		return true
 	}
-	for _, d := range m.GetLeftRightRelativeDirections() {
+	for _, d := range m.getLeftRightRelativeDirections() {
 		try := m.curPos.Add(d)
-		nextChar = m.CharAt(try)
+		nextChar = m.charAt(try)
 		if nextChar != ' ' {
 			m.curPos = try
 			m.curDir = d
