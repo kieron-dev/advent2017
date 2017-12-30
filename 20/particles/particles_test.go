@@ -15,19 +15,99 @@ var _ = Describe("Particles", func() {
 
 	It("calcs distance", func() {
 		p0 := particles.New(particles.Vector{}, particles.Vector{}, particles.Vector{}, 0)
-		Expect(p0.ManhattanDistance()).To(Equal(float64(0)))
+		Expect(p0.Distance()).To(Equal(0))
 		p1 := particles.New(particles.NewVector(1, 2, 3), particles.Vector{}, particles.Vector{}, 0)
-		Expect(p1.ManhattanDistance()).To(Equal(float64(6)))
+		Expect(p1.Distance()).To(Equal(6))
+		p2 := particles.New(particles.NewVector(-1, 2, 3), particles.Vector{}, particles.Vector{}, 0)
+		Expect(p2.Distance()).To(Equal(6))
 	})
 
-	It("calcs pos after time t", func() {
+	It("starts at t 0", func() {
+		p := particles.New(particles.Vector{}, particles.Vector{}, particles.Vector{}, 0)
+		Expect(p.Time()).To(Equal(0))
+	})
+
+	It("can advance one time period", func() {
 		p := particles.New(
 			particles.NewVector(1, 2, 3),
 			particles.NewVector(2, 3, 4),
 			particles.NewVector(3, 4, 5),
 			0,
 		)
-		Expect(p.Position(1)).To(Equal(particles.NewVector(6, 9, 12)))
+		p.Advance(1)
+		Expect(p.Position()).To(Equal(particles.NewVector(6, 9, 12)))
+		Expect(p.Time()).To(Equal(1))
 	})
 
+})
+
+var _ = Describe("distribution", func() {
+	It("can determine steady ordering", func() {
+		d1 := particles.Distribution{
+			Particles: []particles.Separation{
+				{Id: 1, DistFromLast: 1},
+				{Id: 2, DistFromLast: 2},
+			},
+		}
+		d2 := particles.Distribution{
+			Particles: []particles.Separation{
+				{Id: 1, DistFromLast: 2},
+				{Id: 2, DistFromLast: 3},
+			},
+		}
+		Expect(d2.HasSteadyOrder(&d1)).To(BeTrue())
+		d3 := particles.Distribution{
+			Particles: []particles.Separation{
+				{Id: 1, DistFromLast: 2},
+				{Id: 2, DistFromLast: 1},
+			},
+		}
+		Expect(d3.HasSteadyOrder(&d1)).To(BeFalse())
+	})
+
+	It("can generate distribution from slice of particles", func() {
+		ps := []*particles.Particle{
+			particles.New(
+				particles.NewVector(1, 2, 3),
+				particles.NewVector(2, 3, 4),
+				particles.NewVector(3, 4, 5),
+				1,
+			),
+			particles.New(
+				particles.NewVector(2, 3, 4),
+				particles.NewVector(2, 3, 4),
+				particles.NewVector(3, 4, 5),
+				2,
+			),
+		}
+		distr := particles.DistrFromParticles(ps)
+		ExpectedDistr := particles.Distribution{
+			Particles: []particles.Separation{
+				{Id: 1, DistFromLast: 6},
+				{Id: 2, DistFromLast: 3},
+			},
+		}
+		Expect(distr).To(Equal(&ExpectedDistr))
+	})
+})
+
+var _ = Describe("expansion", func() {
+	It("can determine eventual nearest to origin", func() {
+		p0 := particles.New(
+			particles.NewVector(3, 0, 0),
+			particles.NewVector(2, 0, 0),
+			particles.NewVector(-1, 0, 0),
+			0,
+		)
+		p1 := particles.New(
+			particles.NewVector(4, 0, 0),
+			particles.NewVector(0, 0, 0),
+			particles.NewVector(-2, 0, 0),
+			0,
+		)
+		ps := []*particles.Particle{p0, p1}
+		pClosest := particles.GetEventualClosest(ps)
+		Expect(pClosest.Id()).To(Equal(0))
+
+	})
 })
