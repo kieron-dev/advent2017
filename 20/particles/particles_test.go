@@ -108,6 +108,45 @@ var _ = Describe("expansion", func() {
 		ps := []*particles.Particle{p0, p1}
 		pClosest := particles.GetEventualClosest(ps)
 		Expect(pClosest.Id()).To(Equal(0))
+	})
+})
 
+var _ = Describe("slice of particles", func() {
+	It("can remove duplicate positions", func() {
+
+		p0 := particles.New(
+			particles.NewVector(3, 0, 0),
+			particles.NewVector(2, 0, 0),
+			particles.NewVector(-1, 0, 0),
+			0,
+		)
+		p1 := particles.New(
+			particles.NewVector(3, 0, 0),
+			particles.NewVector(2, 0, 0),
+			particles.NewVector(-1, 0, 0),
+			0,
+		)
+		p2 := particles.New(
+			particles.NewVector(3, 1, 0),
+			particles.NewVector(2, 0, 0),
+			particles.NewVector(-1, 0, 0),
+			0,
+		)
+		p3 := particles.New(
+			particles.NewVector(3, 2, 0),
+			particles.NewVector(2, 0, 0),
+			particles.NewVector(-1, 0, 0),
+			0,
+		)
+		p4 := particles.New(
+			particles.NewVector(3, 1, 0),
+			particles.NewVector(2, 0, 0),
+			particles.NewVector(-1, 0, 0),
+			0,
+		)
+
+		ps := []*particles.Particle{p0, p1, p2, p3, p4}
+		ps = particles.RemoveCollisions(ps)
+		Expect(len(ps)).To(Equal(1))
 	})
 })

@@ -36,7 +36,11 @@ func DistrFromParticles(ps []*Particle) *Distribution {
 	prevDist := 0
 	d := Distribution{Particles: []Separation{}}
 	for _, p := range ps {
-		d.Particles = append(d.Particles, Separation{Id: p.id, DistFromLast: p.distance - prevDist})
+		d.Particles = append(d.Particles,
+			Separation{
+				Id:           p.id,
+				DistFromLast: p.distance - prevDist,
+			})
 		prevDist = p.distance
 	}
 	return &d
@@ -131,4 +135,28 @@ func GetEventualClosest(ps []*Particle) *Particle {
 		}
 		dLast = dNext
 	}
+}
+
+func RemoveCollisions(ps []*Particle) []*Particle {
+	ret := []*Particle{}
+	positions := map[Vector][]*Particle{}
+	for _, p := range ps {
+		positions[p.position] = append(positions[p.position], p)
+	}
+	for _, particles := range positions {
+		if len(particles) == 1 {
+			ret = append(ret, particles[0])
+		}
+	}
+	return ret
+}
+
+func GetRemainingAfterAllCollisions(ps []*Particle, iterations int) int {
+	for i := 0; i < iterations; i++ {
+		ps = RemoveCollisions(ps)
+		for _, p := range ps {
+			p.Advance(1)
+		}
+	}
+	return len(ps)
 }
