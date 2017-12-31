@@ -29,6 +29,7 @@ func main() {
 
 	id := 0
 	ps := []*particles.Particle{}
+	ps2 := []*particles.Particle{}
 	for scanner.Scan() {
 		line := scanner.Text()
 		match := re.FindStringSubmatch(line)
@@ -46,11 +47,19 @@ func main() {
 			particles.NewVector(components[6], components[7], components[8]),
 			id,
 		)
+		p2 := particles.New(
+			particles.NewVector(components[0], components[1], components[2]),
+			particles.NewVector(components[3], components[4], components[5]),
+			particles.NewVector(components[6], components[7], components[8]),
+			id,
+		)
 		id++
 		ps = append(ps, p)
+		ps2 = append(ps2, p2)
 	}
 
 	nearest := particles.GetEventualClosest(ps)
 	fmt.Println("Part1:", nearest.Id(), nearest.Time())
+	fmt.Println("Part2:", particles.GetRemainingAfterAllCollisions(ps2, nearest.Time()))
 
 }
