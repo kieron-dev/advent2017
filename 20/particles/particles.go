@@ -114,13 +114,20 @@ func (p *Particle) Id() int {
 
 func GetEventualClosest(ps []*Particle) *Particle {
 	dLast := DistrFromParticles(ps)
+	steadyCount := 0
+	requiredSteadyCount := 2
 	for {
 		for _, p := range ps {
 			p.Advance(1)
 		}
 		dNext := DistrFromParticles(ps)
 		if dNext.HasSteadyOrder(dLast) {
-			return ps[0]
+			steadyCount++
+			if steadyCount == requiredSteadyCount {
+				return ps[0]
+			}
+		} else {
+			steadyCount = 0
 		}
 		dLast = dNext
 	}

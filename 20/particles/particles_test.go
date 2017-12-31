@@ -103,7 +103,7 @@ var _ = Describe("expansion", func() {
 			particles.NewVector(4, 0, 0),
 			particles.NewVector(0, 0, 0),
 			particles.NewVector(-2, 0, 0),
-			0,
+			1,
 		)
 		ps := []*particles.Particle{p0, p1}
 		pClosest := particles.GetEventualClosest(ps)
