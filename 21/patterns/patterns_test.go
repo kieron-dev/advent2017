@@ -1,6 +1,8 @@
 package patterns_test
 
 import (
+	"strings"
+
 	"github.com/kieron-pivotal/advent2017/21/patterns"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -89,6 +91,53 @@ var _ = Describe("Patterns", func() {
 				"###/..#/.#.",
 				"..#/#.#/.##",
 			}))
+		})
+	})
+
+	Context("rules", func() {
+		It("can find matching rule", func() {
+			art := patterns.New()
+			newPattern := "abcd/abcd/abcd/abcd"
+			art.AddRule("#../#.#/##.", newPattern)
+			Expect(art.GetNewPattern(0, 0)).To(Equal(strings.Split(newPattern, "/")))
+		})
+
+		It("can progress one iteration", func() {
+			art := patterns.New()
+			newPattern := "abcd/abcd/abcd/abcd"
+			art.AddRule("#../#.#/##.", newPattern)
+			art.Advance()
+			Expect(art.Pattern()).To(Equal([]string{
+				"abcd",
+				"abcd",
+				"abcd",
+				"abcd",
+			}))
+		})
+
+		It("can progress two iterations", func() {
+			art := patterns.New()
+			art.AddRule("../.#", "##./#../...")
+			art.AddRule(".#./..#/###", "#..#/..../..../#..#")
+			art.Advance()
+			art.Advance()
+			Expect(art.Pattern()).To(Equal([]string{
+				"##.##.",
+				"#..#..",
+				"......",
+				"##.##.",
+				"#..#..",
+				"......",
+			}))
+		})
+
+		It("can count on cells", func() {
+			art := patterns.New()
+			art.AddRule("../.#", "##./#../...")
+			art.AddRule(".#./..#/###", "#..#/..../..../#..#")
+			art.Advance()
+			art.Advance()
+			Expect(art.OnCount()).To(Equal(12))
 		})
 	})
 
