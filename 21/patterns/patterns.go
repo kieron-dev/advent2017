@@ -1,7 +1,12 @@
 package patterns
 
+import (
+	"strings"
+)
+
 type Art struct {
 	pattern []string
+	rules   map[string]string
 }
 
 func New() *Art {
@@ -11,6 +16,7 @@ func New() *Art {
 		"..#",
 		"###",
 	}
+	art.rules = map[string]string{}
 	return &art
 }
 
@@ -37,12 +43,16 @@ func (a *Art) GetKeys(x, y int) []string {
 	return out
 }
 
-func (a *Art) GetSquare(x, y int) [][]byte {
+func (a *Art) getComponentSize() int {
 	l := 3
 	if len(a.pattern)%2 == 0 {
 		l = 2
 	}
+	return l
+}
 
+func (a *Art) GetSquare(x, y int) [][]byte {
+	l := a.getComponentSize()
 	sq := make([][]byte, l)
 	for i := 0; i < l; i++ {
 		sq[i] = make([]byte, l)
@@ -53,6 +63,46 @@ func (a *Art) GetSquare(x, y int) [][]byte {
 		}
 	}
 	return sq
+}
+
+func (a *Art) AddRule(match, newPattern string) {
+	a.rules[match] = newPattern
+}
+
+func (a *Art) GetNewPattern(x, y int) []string {
+	for _, key := range a.GetKeys(x, y) {
+		if pattern, ok := a.rules[key]; ok {
+			return strings.Split(pattern, "/")
+		}
+	}
+	return []string{}
+}
+
+func (a *Art) Advance() {
+	newPattern := []string{}
+	l := a.getComponentSize()
+	s := a.Size()
+	for i := 0; i*l < s; i++ {
+		for j := 0; j*l < s; j++ {
+			p := a.GetNewPattern(i, j)
+			if len(newPattern) < (i+1)*(l+1) {
+				newPattern = append(newPattern, p...)
+			} else {
+				for k, line := range p {
+					newPattern[(l+1)*i+k] += line
+				}
+			}
+		}
+	}
+	a.pattern = newPattern
+}
+
+func (a *Art) OnCount() int {
+	c := 0
+	for _, s := range a.pattern {
+		c += strings.Count(s, "#")
+	}
+	return c
 }
 
 func RotateSquare(sq [][]byte) {
