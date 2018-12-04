@@ -30,17 +30,33 @@ func (e *Entry) Load(line string) {
 }
 
 type GuardSession struct {
-	Id    int
-	Year  int
-	Month int
-	Day   int
-	Awake []bool
+	Id        int
+	Sleeps    map[int]int
+	AsleepFor int
 }
 
-func NewGuardSession(id, year, month, day int) *GuardSession {
-	sess := GuardSession{Id: id, Year: year, Month: month, Day: day}
-	sess.Awake = []bool{}
+func NewGuardSession(id int) *GuardSession {
+	sess := GuardSession{Id: id}
+	sess.Sleeps = map[int]int{}
 	return &sess
+}
+
+func (s *GuardSession) Sleeping(from, to int) {
+	for i := from; i < to; i++ {
+		s.Sleeps[i]++
+		s.AsleepFor++
+	}
+}
+
+func (s *GuardSession) MaxMinute() int {
+	var maxVal, maxMinute int
+	for i := 0; i < 60; i++ {
+		if s.Sleeps[i] > maxVal {
+			maxVal = s.Sleeps[i]
+			maxMinute = i
+		}
+	}
+	return maxMinute
 }
 
 func main() {
@@ -73,21 +89,55 @@ func main() {
 		return false
 	})
 
-	sessions := []*GuardSession{}
+	sessions := map[int]*GuardSession{}
+	var currentId int
+	lastSleepStart := 0
+
 	for _, entry := range entries {
 		if strings.HasPrefix(entry.Message, "Guard") {
-			var id, day int
-			fmt.Sscanf(entry.Message, "Guard #%d", &id)
-			if entry.Hour == 23 {
-				day = entry.Day + 1
-			} else {
-				day = entry.Day
+			fmt.Sscanf(entry.Message, "Guard #%d", &currentId)
+			var session *GuardSession
+			var ok bool
+			session, ok = sessions[currentId]
+			if !ok {
+				session = NewGuardSession(currentId)
+				sessions[currentId] = session
 			}
-			session := NewGuardSession(id, entry.Year, entry.Month, day)
-			sessions = append(sessions, session)
+			lastSleepStart = 0
+		} else if strings.Contains(entry.Message, "falls") {
+			lastSleepStart = entry.Minute
+		} else if strings.Contains(entry.Message, "wakes") {
+			sessions[currentId].Sleeping(lastSleepStart, entry.Minute)
 		}
 	}
-	for _, s := range sessions {
-		fmt.Printf("*s= %+v\n", *s)
+
+	maxSleep := 0
+	maxId := 0
+	for id, s := range sessions {
+		if s.AsleepFor > maxSleep {
+			maxSleep = s.AsleepFor
+			maxId = id
+		}
 	}
+	bestMinute := sessions[maxId].MaxMinute()
+	fmt.Printf("maxId = %+v\n", maxId)
+	fmt.Printf("bestMinute = %+v\n", bestMinute)
+	fmt.Printf("maxId * bestMinute = %+v\n", maxId*bestMinute)
+
+	fmt.Println("***********")
+
+	maxVal := 0
+	maxMinute := 0
+	for id, s := range sessions {
+		bestMinute = s.MaxMinute()
+		val := s.Sleeps[bestMinute]
+		if val > maxVal {
+			maxVal = val
+			maxId = id
+			maxMinute = bestMinute
+		}
+	}
+	fmt.Printf("maxId = %+v\n", maxId)
+	fmt.Printf("maxMinute = %+v\n", maxMinute)
+	fmt.Printf("maxId * maxMinute = %+v\n", maxId*maxMinute)
 }
