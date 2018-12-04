@@ -7,26 +7,24 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Entry struct {
-	Year    int
-	Month   int
-	Day     int
-	Hour    int
-	Minute  int
-	Message string
+	Timestamp time.Time
+	Message   string
 }
 
 func (e *Entry) Load(line string) {
 	halves := strings.Split(line, "] ")
 	e.Message = halves[1]
 	timestamp := halves[0][1:]
-	e.Year, _ = strconv.Atoi(timestamp[:4])
-	e.Month, _ = strconv.Atoi(timestamp[5:7])
-	e.Day, _ = strconv.Atoi(timestamp[8:10])
-	e.Hour, _ = strconv.Atoi(timestamp[11:13])
-	e.Minute, _ = strconv.Atoi(timestamp[14:16])
+	year, _ := strconv.Atoi(timestamp[:4])
+	month, _ := strconv.Atoi(timestamp[5:7])
+	day, _ := strconv.Atoi(timestamp[8:10])
+	hour, _ := strconv.Atoi(timestamp[11:13])
+	minute, _ := strconv.Atoi(timestamp[14:16])
+	e.Timestamp = time.Date(year, time.Month(month), day, hour, minute, 0, 0, time.Local)
 }
 
 type GuardSession struct {
@@ -44,8 +42,8 @@ func NewGuardSession(id int) *GuardSession {
 func (s *GuardSession) Sleeping(from, to int) {
 	for i := from; i < to; i++ {
 		s.Sleeps[i]++
-		s.AsleepFor++
 	}
+	s.AsleepFor += to - from
 }
 
 func (s *GuardSession) MaxMinute() int {
@@ -71,22 +69,7 @@ func main() {
 	}
 
 	sort.Slice(entries, func(i, j int) bool {
-		if entries[i].Year != entries[j].Year {
-			return entries[i].Year < entries[j].Year
-		}
-		if entries[i].Month != entries[j].Month {
-			return entries[i].Month < entries[j].Month
-		}
-		if entries[i].Day != entries[j].Day {
-			return entries[i].Day < entries[j].Day
-		}
-		if entries[i].Hour != entries[j].Hour {
-			return entries[i].Hour < entries[j].Hour
-		}
-		if entries[i].Minute != entries[j].Minute {
-			return entries[i].Minute < entries[j].Minute
-		}
-		return false
+		return entries[i].Timestamp.Unix()-entries[j].Timestamp.Unix() < 0
 	})
 
 	sessions := map[int]*GuardSession{}
@@ -105,9 +88,9 @@ func main() {
 			}
 			lastSleepStart = 0
 		} else if strings.Contains(entry.Message, "falls") {
-			lastSleepStart = entry.Minute
+			lastSleepStart = entry.Timestamp.Minute()
 		} else if strings.Contains(entry.Message, "wakes") {
-			sessions[currentId].Sleeping(lastSleepStart, entry.Minute)
+			sessions[currentId].Sleeping(lastSleepStart, entry.Timestamp.Minute())
 		}
 	}
 
