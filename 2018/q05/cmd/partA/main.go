@@ -5,21 +5,43 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
+	"unicode"
 )
 
 func main() {
 	bytes, _ := ioutil.ReadAll(os.Stdin)
 	chain := string(bytes)
+	l := reduce(chain)
+	fmt.Println(l)
+
+	minL := len(chain)
+	for r := rune('a'); r <= rune('z'); r++ {
+		cr := unicode.ToUpper(r)
+		test := strings.Replace(chain, string(r), "", -1)
+		test = strings.Replace(test, string(cr), "", -1)
+		l = reduce(test)
+		if l < minL {
+			minL = l
+		}
+	}
+	fmt.Printf("minL = %+v\n", minL)
+}
+
+func reduce(chain string) int {
 	stack := NewStack()
 	for _, r := range chain {
+		if r == rune('\n') {
+			continue
+		}
 		prev := stack.Peek()
-		if r != prev && strings.Upper(r) == strings.Upper(prev) {
+		if r != prev && strings.ToUpper(string(r)) == strings.ToUpper(string(prev)) {
 			stack.Pop()
 		} else {
 			stack.Push(r)
 		}
 	}
-	fmt.Println(stack.Len())
+	return stack.Len()
 }
 
 type Stack struct {
@@ -27,25 +49,25 @@ type Stack struct {
 	length int
 }
 
-func NewStack() Stack {
+func NewStack() *Stack {
 	s := Stack{}
 	s.items = []rune{}
-	return s
+	return &s
 }
 
-func (s Stack) Peek() rune {
+func (s *Stack) Peek() rune {
 	if s.length == 0 {
-		return rune('\0')
+		return rune(0)
 	}
 	return s.items[s.length-1]
 }
 
-func (s Stack) Push(r rune) {
+func (s *Stack) Push(r rune) {
 	s.items = append(s.items, r)
 	s.length++
 }
 
-func (s Stack) Pop() rune {
+func (s *Stack) Pop() rune {
 	if s.length == 0 {
 		log.Fatal("empty stack")
 	}
@@ -55,6 +77,16 @@ func (s Stack) Pop() rune {
 	return r
 }
 
-func (s Stack) Len() int {
+func (s *Stack) Len() int {
 	return s.length
+}
+
+func (s *Stack) Print() {
+	i := 0
+	for _, r := range s.items {
+		i++
+		fmt.Printf("%c", r)
+	}
+	fmt.Printf("i = %+v\n", i)
+	fmt.Println()
 }
