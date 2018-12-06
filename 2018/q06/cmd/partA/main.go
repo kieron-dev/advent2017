@@ -55,6 +55,7 @@ func main() {
 	}
 
 	counts := map[int]int{}
+	nearCount := 0
 
 	grid := map[Coord]int{}
 	for y := bottom; y <= top; y++ {
@@ -63,8 +64,10 @@ func main() {
 			minD := largeNum
 			var minI int
 			var minCount int
+			total := 0
 			for i, c := range coords {
 				d := coord.Distance(c)
+				total += d
 				if d < minD {
 					minCount = 1
 					minD = d
@@ -72,6 +75,9 @@ func main() {
 				} else if d == minD {
 					minCount++
 				}
+			}
+			if total < 10000 {
+				nearCount++
 			}
 			if minCount == 1 {
 				grid[coord] = minI
@@ -103,4 +109,5 @@ func main() {
 	}
 	fmt.Printf("Largest non-infinite area is %d\n", max)
 
+	fmt.Printf("Near area is %d\n", nearCount)
 }
