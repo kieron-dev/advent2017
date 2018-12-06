@@ -12,7 +12,7 @@ type Coord struct {
 }
 
 func (c Coord) Distance(from Coord) int {
-	x := from.x - c.y
+	x := from.x - c.x
 	if x < 0 {
 		x = -x
 	}
@@ -27,11 +27,12 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	coords := []Coord{}
+	const largeNum = 10000000
 
-	left := 10000000
-	bottom := 10000000
-	right := -10000000
-	top := -10000000
+	left := largeNum
+	bottom := largeNum
+	right := -largeNum
+	top := -largeNum
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -53,27 +54,53 @@ func main() {
 		}
 	}
 
-	fmt.Println(coords)
-	fmt.Printf("left = %+v\n", left)
-	fmt.Printf("right = %+v\n", right)
-	fmt.Printf("top = %+v\n", top)
-	fmt.Printf("bottom = %+v\n", bottom)
+	counts := map[int]int{}
 
 	grid := map[Coord]int{}
-	for x := left; x <= right; x++ {
-		for y := bottom; y <= top; y++ {
+	for y := bottom; y <= top; y++ {
+		for x := left; x <= right; x++ {
 			coord := Coord{x: x, y: y}
-			minD := 1000000000
-			minI := -1
+			minD := largeNum
+			var minI int
+			var minCount int
 			for i, c := range coords {
 				d := coord.Distance(c)
 				if d < minD {
+					minCount = 1
 					minD = d
 					minI = i
+				} else if d == minD {
+					minCount++
 				}
 			}
-			grid[coord] = minI
+			if minCount == 1 {
+				grid[coord] = minI
+			} else {
+				grid[coord] = -1
+			}
+			counts[grid[coord]]++
 		}
 	}
-	fmt.Printf("grid = %+v\n", grid)
+
+	edgeVals := map[int]bool{-1: true}
+	for y := top; y <= bottom; y++ {
+		edgeVals[grid[Coord{x: left, y: y}]] = true
+		edgeVals[grid[Coord{x: right, y: y}]] = true
+	}
+	for x := left; x <= right; x++ {
+		edgeVals[grid[Coord{x: x, y: top}]] = true
+		edgeVals[grid[Coord{x: x, y: bottom}]] = true
+	}
+
+	max := 0
+	for i, c := range counts {
+		if edgeVals[i] {
+			continue
+		}
+		if c > max {
+			max = c
+		}
+	}
+	fmt.Printf("Largest non-infinite area is %d\n", max)
+
 }
