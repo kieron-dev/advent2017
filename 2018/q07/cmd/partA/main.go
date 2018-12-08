@@ -14,8 +14,6 @@ type node struct {
 
 func main() {
 	nodes := map[string]*node{}
-	roots := map[string]bool{}
-
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for scanner.Scan() {
@@ -30,55 +28,52 @@ func main() {
 			dependedOnNode = &node{label: dependedOn}
 			nodes[dependedOn] = dependedOnNode
 		}
-		roots[dependedOn] = false
 
 		dependsOnNode, ok = nodes[dependsOn]
 		if !ok {
 			dependsOnNode = &node{label: dependsOn}
 			nodes[dependsOn] = dependsOnNode
-			roots[dependsOn] = true
 		}
 
 		dependsOnNode.children = append(dependsOnNode.children, dependedOnNode)
-
 	}
 
-	fmt.Printf("roots = %+v\n", roots)
+	output := []string{}
 
-	rootNodes := []*node{}
-	for n, isRoot := range roots {
-		if !isRoot {
-			continue
-		}
-		rootNodes = append(rootNodes, nodes[n])
+	for len(nodes) > 0 {
+		leaves := GetLeaves(nodes)
+		SortNodes(leaves)
+		output = append(output, leaves[0].label)
+		RemoveNode(nodes, leaves[0])
 	}
 
-	SortNodes(rootNodes)
-	order := []string{}
-	for _, n := range rootNodes {
-		fmt.Printf("n = %+v\n", n)
-		n.DFS(&order, map[*node]bool{})
-	}
-
-	for _, o := range order {
-		fmt.Print(o)
+	for _, o := range output {
+		fmt.Printf("%s", o)
 	}
 	fmt.Println()
-	fmt.Printf("order = %+v\n", order)
-
 }
 
-func (n *node) DFS(order *[]string, visited map[*node]bool) {
-	SortNodes(n.children)
-	for _, c := range n.children {
-		if visited[c] {
-			continue
+func GetLeaves(nodes map[string]*node) []*node {
+	out := []*node{}
+	for _, n := range nodes {
+		if len(n.children) == 0 {
+			out = append(out, n)
 		}
-		c.DFS(order, visited)
 	}
-	// fmt.Println(n.label)
-	*order = append(*order, n.label)
-	visited[n] = true
+	return out
+}
+
+func RemoveNode(nodes map[string]*node, remove *node) {
+	for _, n := range nodes {
+		newChildren := []*node{}
+		for _, c := range n.children {
+			if c != remove {
+				newChildren = append(newChildren, c)
+			}
+		}
+		n.children = newChildren
+	}
+	delete(nodes, remove.label)
 }
 
 func SortNodes(nodes []*node) {
