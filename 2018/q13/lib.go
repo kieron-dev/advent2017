@@ -22,6 +22,7 @@ type Cart struct {
 	Col           int
 	Dir           Direction
 	Intersections int
+	Dead          bool
 }
 
 type Mine struct {
@@ -158,31 +159,75 @@ func (m *Mine) Move(c *Cart) {
 	}
 }
 
-func (m *Mine) MoveCarts() {
+func (m *Mine) MoveCarts() *Cart {
 	for _, cart := range m.Carts {
 		m.Move(cart)
+		if m.HasCrashed(cart) {
+			return cart
+		}
+	}
+	m.SortCarts()
+	return nil
+}
+
+func (m *Mine) MoveCartsRemovingCrashes() {
+	for _, cart := range m.Carts {
+		if cart.Dead {
+			continue
+		}
+		m.Move(cart)
+		if m.HasCrashed(cart) {
+			m.MarkCrashed(cart)
+		}
 	}
 	m.SortCarts()
 }
 
-func (m *Mine) RunTillCrash() (iteration int, crashedCart *Cart) {
+func (m *Mine) MarkCrashed(cart *Cart) {
+	for _, c := range m.Carts {
+		if c.Row == cart.Row && c.Col == cart.Col {
+			c.Dead = true
+		}
+	}
+}
+
+func (m *Mine) HasCrashed(cart *Cart) bool {
+	for _, c := range m.Carts {
+		if c == cart || c.Dead {
+			continue
+		}
+		if c.Row == cart.Row && c.Col == cart.Col {
+			return true
+		}
+	}
+	return false
+}
+
+func (m *Mine) RunTillOneLeft() (iteration int, cart *Cart) {
 	for {
 		iteration++
-		m.MoveCarts()
-		crashedCart = m.FirstCrash()
-		if crashedCart != nil {
+		m.MoveCartsRemovingCrashes()
+		l := 0
+		cart = nil
+		for _, c := range m.Carts {
+			if !c.Dead {
+				l++
+				cart = c
+			}
+		}
+
+		if l <= 1 {
 			return
 		}
 	}
 }
 
-func (m *Mine) FirstCrash() *Cart {
-	for i := 1; i < len(m.Carts); i++ {
-		a := m.Carts[i-1]
-		b := m.Carts[i]
-		if a.Row == b.Row && a.Col == b.Col {
-			return m.Carts[i-1]
+func (m *Mine) RunTillCrash() (iteration int, crashedCart *Cart) {
+	for {
+		iteration++
+		crashedCart = m.MoveCarts()
+		if crashedCart != nil {
+			return
 		}
 	}
-	return nil
 }
