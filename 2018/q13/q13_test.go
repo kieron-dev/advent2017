@@ -77,4 +77,16 @@ var _ = Describe("Q13", func() {
 		Expect(crashedCart.Row).To(Equal(3))
 		Expect(crashedCart.Col).To(Equal(7))
 	})
+
+})
+var _ = Describe("removing crashed carts", func() {
+	It("works", func() {
+		f, err := os.Open("exampleII")
+		Expect(err).NotTo(HaveOccurred())
+		mine := q13.NewMine(f)
+		i, remaining := mine.RunTillOneLeft()
+		Expect(i).To(Equal(3))
+		Expect(remaining.Row).To(Equal(4))
+		Expect(remaining.Col).To(Equal(6))
+	})
 })
