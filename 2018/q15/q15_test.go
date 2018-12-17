@@ -129,7 +129,29 @@ var _ = Describe("Q15", func() {
 	Context("Full battle", func() {
 		It("gets the right score", func() {
 			f := q15.NewFight(input04)
+			f.SetElfHit(3)
 			Expect(f.Run()).To(Equal(27730))
+		})
+	})
+
+	FContext("part2", func() {
+		It("does something", func() {
+
+			in := strings.NewReader(`#######
+#.G...#
+#...EG#
+#.#.#G#
+#..G#E#
+#.....#
+#######
+`)
+			// f := q15.NewFight(in)
+			// f.SetElfHit(15)
+			// r := f.Run()
+			// c := f.ElfCount()
+			// fmt.Printf("c = %+v\n", c)
+			// Expect(r).To(Equal(0))
+			Expect(q15.RunWithNoElfDeath(in)).To(Equal(4988))
 		})
 	})
 
