@@ -13,8 +13,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fight := q15.NewFight(f)
-	fight.SetElfHit(3)
-	res := fight.Run()
+	res := q15.RunWithNoElfDeath(f)
 	fmt.Printf("res = %+v\n", res)
 }

@@ -2,16 +2,19 @@ package q15
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
 	"sort"
 	"strings"
-	"time"
 )
 
 type Fight struct {
 	Grid   [][]rune
 	Health map[Coord]int
+	ElfHit int
 }
 
 type Coord struct {
@@ -34,6 +37,10 @@ func (f *Fight) AdjacentCells(coord Coord) []Coord {
 		cells = append(cells, cell)
 	}
 	return cells
+}
+
+func (f *Fight) SetElfHit(hit int) {
+	f.ElfHit = hit
 }
 
 func NewFight(in io.Reader) *Fight {
@@ -279,18 +286,53 @@ func (f *Fight) EnemyEliminated(c Coord) bool {
 	return true
 }
 
+func RunWithNoElfDeath(in io.Reader) int {
+	bs, err := ioutil.ReadAll(in)
+	if err != nil {
+		log.Fatal(err)
+	}
+	buf := bytes.NewBuffer(bs)
+	f := NewFight(buf)
+	elfCount := f.ElfCount()
+	elfPower := 4
+	lastFail := 4
+	lastSuccess := 10000000
+	lastSuccessRes := 0
+
+	for {
+		fmt.Printf("elfPower = %+v\n", elfPower)
+		buf := bytes.NewBuffer(bs)
+		f := NewFight(buf)
+		f.SetElfHit(elfPower)
+		res := f.Run()
+		fmt.Printf("res = %+v\n", res)
+		newElfCount := f.ElfCount()
+		if newElfCount < elfCount {
+			lastFail = elfPower
+			add := (lastSuccess - elfPower) / 2
+			if elfPower < add {
+				add = elfPower
+			}
+			elfPower += add
+		} else {
+			lastSuccess = elfPower
+			lastSuccessRes = res
+			elfPower -= (elfPower - lastFail) / 2
+		}
+		if lastSuccess == lastFail+1 {
+			return lastSuccessRes
+		}
+	}
+}
+
 func (f *Fight) Run() int {
 	i := 0
 	for {
 		if !f.Step() {
 			break
 		}
-		f.Print()
-		fmt.Println()
 		i++
-		time.Sleep(100 * time.Millisecond)
 	}
-	f.Print()
 	sum := 0
 	for _, h := range f.Health {
 		if h > 0 {
@@ -300,15 +342,39 @@ func (f *Fight) Run() int {
 	return i * sum
 }
 
+func (f *Fight) GetHitPower(c Coord) int {
+	switch f.At(c) {
+	case 'G':
+		return 3
+	case 'E':
+		return f.ElfHit
+	default:
+		return 0
+	}
+}
+
+func (f *Fight) ElfCount() int {
+	count := 0
+	for r := 0; r < len(f.Grid); r++ {
+		for c := 0; c < len(f.Grid[0]); c++ {
+			if f.At(Coord{Row: r, Col: c}) == 'E' {
+				count++
+			}
+		}
+	}
+	return count
+}
+
 func (f *Fight) Step() bool {
 	for _, actor := range f.GetActorCoords() {
 		if f.At(actor) == '.' {
 			// killed in a previous step
 			continue
 		}
+		hitPower := f.GetHitPower(actor)
 		if f.IsAttacking(actor) {
 			victim := f.GetVictim(actor)
-			f.Attack(victim, 3)
+			f.Attack(victim, hitPower)
 			continue
 		}
 		t := f.At(actor)
@@ -328,7 +394,7 @@ func (f *Fight) Step() bool {
 
 		if f.IsAttacking(nextSquare) {
 			victim := f.GetVictim(nextSquare)
-			f.Attack(victim, 3)
+			f.Attack(victim, hitPower)
 			continue
 		}
 	}
