@@ -6,6 +6,7 @@ import (
 	"io"
 	"sort"
 	"strings"
+	"time"
 )
 
 type Fight struct {
@@ -119,6 +120,15 @@ func (f *Fight) GetAttackSquares(from Coord) []Coord {
 	return coordList
 }
 
+func IsIn(coords []Coord, coord Coord) bool {
+	for _, c := range coords {
+		if coord == c {
+			return true
+		}
+	}
+	return false
+}
+
 func (f *Fight) NearestAttack(from Coord) Coord {
 	attackSquares := f.GetAttackSquares(from)
 	distances := map[Coord]int{}
@@ -126,10 +136,22 @@ func (f *Fight) NearestAttack(from Coord) Coord {
 	visited := map[Coord]bool{}
 	distances[from] = 0
 	queue := []Coord{from}
+	minDistance := 99999999
 
 	for len(queue) > 0 {
 		cell := queue[0]
 		queue = queue[1:]
+		if visited[cell] {
+			continue
+		}
+
+		if IsIn(attackSquares, cell) {
+			if distances[cell] > minDistance {
+				break
+			}
+			minDistance = distances[cell]
+		}
+
 		for _, adj := range f.AdjacentCells(cell) {
 			if visited[adj] || f.At(adj) != '.' {
 				continue
@@ -193,10 +215,13 @@ func (f *Fight) Distance(from, to Coord) int {
 
 	for len(queue) > 0 {
 		cell := queue[0]
+		queue = queue[1:]
+		if visited[cell] {
+			continue
+		}
 		if cell == to {
 			return distances[cell]
 		}
-		queue = queue[1:]
 		for _, adj := range f.AdjacentCells(cell) {
 			if visited[adj] || f.At(adj) != '.' {
 				continue
@@ -260,11 +285,12 @@ func (f *Fight) Run() int {
 		if !f.Step() {
 			break
 		}
-		// if i%100 == 0 {
-		fmt.Printf("i = %+v\n", i)
-		// }
+		f.Print()
+		fmt.Println()
 		i++
+		time.Sleep(100 * time.Millisecond)
 	}
+	f.Print()
 	sum := 0
 	for _, h := range f.Health {
 		if h > 0 {
