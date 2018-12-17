@@ -15,8 +15,8 @@ var _ = Describe("Q15", func() {
 		input02 *strings.Reader
 		input03 *strings.Reader
 		input04 *strings.Reader
-		input05 *strings.Reader
-		fight   *q15.Fight
+		// input05 *strings.Reader
+		fight *q15.Fight
 	)
 
 	BeforeEach(func() {
@@ -54,14 +54,14 @@ var _ = Describe("Q15", func() {
 #######
 `)
 
-		input05 = strings.NewReader(`#######
-#...G.#
-#..G.G#
-#.#.#G#
-#...#E#
-#.....#
-#######
-`)
+		// 		input05 = strings.NewReader(`#######
+		// #...G.#
+		// #..G.G#
+		// #.#.#G#
+		// #...#E#
+		// #.....#
+		// #######
+		// `)
 	})
 
 	Context("initialising", func() {
