@@ -136,21 +136,21 @@ func (c *Computer) Eqrr(R1, R2, R3 int) {
 	}
 }
 
-func (c *Computer) NumOps(d *Computer, x, y, z int) int {
-	count := 0
+func (c *Computer) MatchingOps(d *Computer, x, y, z int) []int {
+	matches := []int{}
 	var savedRegs [4]int
 	for i := 0; i < 4; i++ {
 		savedRegs[i] = c.Registers[i]
 	}
 
-	for _, op := range c.Ops() {
+	for n, op := range c.Ops() {
 		for i := 0; i < 4; i++ {
 			c.Registers[i] = savedRegs[i]
 		}
 		op(x, y, z)
 		if c.Equals(d) {
-			count++
+			matches = append(matches, n)
 		}
 	}
-	return count
+	return matches
 }

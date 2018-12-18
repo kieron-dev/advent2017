@@ -30,7 +30,7 @@ func main() {
 			c.SetRegisters(w, x, y, z)
 		} else if n, _ := fmt.Sscanf(line, "After: [%d, %d, %d, %d]", &w, &x, &y, &z); n > 0 {
 			d.SetRegisters(w, x, y, z)
-			opCount := c.NumOps(d, in1, in2, in3)
+			opCount := len(c.MatchingOps(d, in1, in2, in3))
 			fmt.Println(c, d, in1, in2, in3, "-", opCount)
 			if opCount > 2 {
 				count++
