@@ -143,11 +143,11 @@ func (c *Computer) NumOps(d *Computer, x, y, z int) int {
 		savedRegs[i] = c.Registers[i]
 	}
 
-	for op := 0; op < 12; op++ {
+	for _, op := range c.Ops() {
 		for i := 0; i < 4; i++ {
 			c.Registers[i] = savedRegs[i]
 		}
-		c.Ops()[op](x, y, z)
+		op(x, y, z)
 		if c.Equals(d) {
 			count++
 		}
