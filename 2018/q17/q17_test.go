@@ -2,8 +2,6 @@ package q17_test
 
 import (
 	"io"
-	"log"
-	"os"
 	"strings"
 
 	"github.com/kieron-pivotal/advent2017/2018/q17"
@@ -51,14 +49,23 @@ y=13, x=498..504
 		Expect(s.GetContainedRow(q17.NewCoord(500, 2))).To(Equal([]q17.Coord{}))
 	})
 
-	XIt("can load the real input", func() {
-		f, err := os.Open("input")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		s := q17.NewSlice(f)
+	FIt("can fill solid bits", func() {
+		s := q17.NewSlice(ex01)
+		s.Flow(q17.NewCoord(500, 0))
 		s.Print()
+		Expect(s.CountWater()).To(Equal(57))
 	})
+
+	// FIt("can load the real input", func() {
+	// 	f, err := os.Open("input")
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	//
+	// 	s := q17.NewSlice(f)
+	// 	s.Flow(q17.NewCoord(500, 0))
+	// 	s.Print()
+	// 	fmt.Printf("s.CountWater() = %+v\n", s.CountWater())
+	// })
 
 })
