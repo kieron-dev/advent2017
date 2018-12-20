@@ -9,6 +9,7 @@ import (
 	"log"
 	"sort"
 	"strings"
+	"time"
 )
 
 type Fight struct {
@@ -331,8 +332,12 @@ func (f *Fight) Run() int {
 		if !f.Step() {
 			break
 		}
+		f.Print()
+		fmt.Println()
+		time.Sleep(time.Millisecond * 80)
 		i++
 	}
+	f.Print()
 	sum := 0
 	for _, h := range f.Health {
 		if h > 0 {
