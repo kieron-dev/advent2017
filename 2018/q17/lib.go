@@ -17,6 +17,10 @@ func (c Coord) Down() Coord {
 	return Coord{X: c.X, Y: c.Y + 1}
 }
 
+func (c Coord) Up() Coord {
+	return Coord{X: c.X, Y: c.Y - 1}
+}
+
 func (c Coord) Left() Coord {
 	return Coord{X: c.X - 1, Y: c.Y}
 }
@@ -44,7 +48,6 @@ func NewSlice(in io.Reader) *Slice {
 	bn := 99999999
 	s := Slice{MinX: bn, MaxX: -bn, MinY: bn, MaxY: -bn}
 	s.Grid = map[Coord]rune{}
-	s.Set(NewCoord(500, 0), '+')
 
 	scanner := bufio.NewScanner(in)
 	for scanner.Scan() {
@@ -88,11 +91,13 @@ func (s *Slice) Set(c Coord, v rune) {
 	if c.X > s.MaxX {
 		s.MaxX = c.X
 	}
-	if c.Y < s.MinY {
-		s.MinY = c.Y
-	}
-	if c.Y > s.MaxY {
-		s.MaxY = c.Y
+	if v == '#' {
+		if c.Y < s.MinY {
+			s.MinY = c.Y
+		}
+		if c.Y > s.MaxY {
+			s.MaxY = c.Y
+		}
 	}
 }
 
@@ -113,18 +118,111 @@ func (s *Slice) Print() {
 	}
 }
 
+func (s *Slice) IsWaterOrClay(c Coord) bool {
+	v := s.At(c)
+	return v == '#' || v == '~'
+}
+
+func (s *Slice) Flow(from Coord) {
+	queue := []Coord{from}
+
+	for len(queue) > 0 { //&& len(queue) < 20 {
+		start := queue[0]
+		queue = queue[1:]
+		if s.At(start) != '.' {
+			continue
+		}
+		newSources := s.DripTillOverFlow(start)
+		for _, c := range newSources {
+			if c.Y <= s.MaxY && s.At(c) == '.' {
+				queue = append(queue, c)
+			}
+		}
+	}
+}
+
+func (s *Slice) CountWater() int {
+	count := 0
+	for c, v := range s.Grid {
+		if c.Y < s.MinY {
+			continue
+		}
+		if v == '~' || v == '|' {
+			count++
+		}
+	}
+	return count
+}
+
 func (s *Slice) DripTillOverFlow(from Coord) []Coord {
-	return nil
+	for !s.IsWaterOrClay(from.Down()) {
+		if s.At(from) == '|' {
+			return nil
+		}
+		s.Set(from, '|')
+		from = from.Down()
+		if from.Y > s.MaxY {
+			return nil
+		}
+	}
+	for {
+		row := s.GetContainedRow(from)
+		if len(row) > 0 {
+			for _, c := range row {
+				s.Set(c, '~')
+			}
+			from = from.Up()
+		} else {
+			break
+		}
+	}
+	flowThrough, newSources := s.GetOverflowRow(from)
+	for _, c := range flowThrough {
+		s.Set(c, '|')
+	}
+	return newSources
+}
+
+func (s *Slice) GetOverflowRow(from Coord) (flowedThrough, newSources []Coord) {
+	leftLim := from
+	for {
+		leftLim = leftLim.Left()
+		if !s.IsWaterOrClay(leftLim.Down()) {
+			newSources = append(newSources, leftLim)
+			leftLim = leftLim.Right()
+			break
+		}
+		if s.At(leftLim.Left()) == '#' {
+			break
+		}
+	}
+
+	rightLim := from
+	for {
+		rightLim = rightLim.Right()
+		if !s.IsWaterOrClay(rightLim.Down()) {
+			newSources = append(newSources, rightLim)
+			rightLim = rightLim.Left()
+			break
+		}
+		if s.At(rightLim.Right()) == '#' {
+			break
+		}
+	}
+	for x := leftLim.X; x <= rightLim.X; x++ {
+		flowedThrough = append(flowedThrough, NewCoord(x, from.Y))
+	}
+	return
 }
 
 func (s *Slice) GetContainedRow(from Coord) []Coord {
-	if s.At(from.Down()) != '#' && s.At(from.Down()) != '~' {
+	if !s.IsWaterOrClay(from.Down()) {
 		return []Coord{}
 	}
 
 	var containedRight bool
 	rightLim := from
-	for rightLim.X <= s.MaxX {
+	for {
 		rightLim = rightLim.Right()
 		if s.At(rightLim) == '#' {
 			containedRight = true
@@ -140,7 +238,7 @@ func (s *Slice) GetContainedRow(from Coord) []Coord {
 
 	var containedLeft bool
 	leftLim := from
-	for leftLim.X <= s.MaxX {
+	for {
 		leftLim = leftLim.Left()
 		if s.At(leftLim) == '#' {
 			containedLeft = true
