@@ -1,6 +1,7 @@
 package q17_test
 
 import (
+	"io"
 	"log"
 	"os"
 	"strings"
@@ -12,8 +13,12 @@ import (
 
 var _ = Describe("Q17", func() {
 
-	It("draws correct pic", func() {
-		in := strings.NewReader(`x=495, y=2..7
+	var (
+		ex01 io.Reader
+	)
+
+	BeforeEach(func() {
+		ex01 = strings.NewReader(`x=495, y=2..7
 y=7, x=495..501
 x=501, y=3..7
 x=498, y=2..4
@@ -22,12 +27,31 @@ x=498, y=10..13
 x=504, y=10..13
 y=13, x=498..504
 `)
-		s := q17.NewSlice(in)
+	})
+
+	It("draws correct pic", func() {
+		s := q17.NewSlice(ex01)
 		s.Print()
 		Expect(true).To(BeTrue())
 	})
 
-	FIt("can load the real input", func() {
+	It("can detect a contained point", func() {
+		s := q17.NewSlice(ex01)
+		Expect(s.GetContainedRow(q17.NewCoord(500, 6))).To(Equal([]q17.Coord{
+			{X: 496, Y: 6},
+			{X: 497, Y: 6},
+			{X: 498, Y: 6},
+			{X: 499, Y: 6},
+			{X: 500, Y: 6},
+		}))
+	})
+
+	It("can detect an uncontained point", func() {
+		s := q17.NewSlice(ex01)
+		Expect(s.GetContainedRow(q17.NewCoord(500, 2))).To(Equal([]q17.Coord{}))
+	})
+
+	XIt("can load the real input", func() {
 		f, err := os.Open("input")
 		if err != nil {
 			log.Fatal(err)
