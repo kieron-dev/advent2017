@@ -3,6 +3,7 @@ package q18_test
 import (
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"github.com/kieron-pivotal/advent2017/2018/q18"
@@ -45,7 +46,38 @@ var _ = Describe("Q18", func() {
 		}
 		a.Print()
 		fmt.Printf("a.Score() = %+v\n", a.Score())
+	})
 
+	It("can work out periods", func() {
+		f, err := os.Open("input")
+		Expect(err).NotTo(HaveOccurred())
+		a := q18.NewArea(f)
+		start, period := a.GetPeriod()
+		fmt.Printf("start = %+v\n", start)
+		fmt.Printf("period = %+v\n", period)
+
+		for i := 0; i < start; i++ {
+			a.Step()
+		}
+		score := a.Score()
+		for i := 0; i < period; i++ {
+			a.Step()
+		}
+		Expect(a.Score()).To(Equal(score))
+	})
+
+	It("can go far in the future", func() {
+		f, err := os.Open("input")
+		Expect(err).NotTo(HaveOccurred())
+		a := q18.NewArea(f)
+		score := a.GetBigFutureScore(1000)
+
+		a.Reset()
+
+		for i := 0; i < 1000; i++ {
+			a.Step()
+		}
+		Expect(a.Score()).To(Equal(score))
 	})
 
 })
