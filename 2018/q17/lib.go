@@ -60,9 +60,9 @@ func NewSlice(in io.Reader) *Slice {
 
 func (s *Slice) SetVein(vein string) {
 	var a, b, c int
-	if n, err := fmt.Sscanf(vein, "x=%d, y=%d..%d", &a, &b, &c); err == nil && n > 0 {
+	if n, err := fmt.Sscanf(vein, "x=%d, y=%d..%d", &a, &b, &c); err == nil && n == 3 {
 		s.AddVertical(a, b, c)
-	} else if n, err := fmt.Sscanf(vein, "y=%d, x=%d..%d", &a, &b, &c); err == nil && n > 0 {
+	} else if n, err := fmt.Sscanf(vein, "y=%d, x=%d..%d", &a, &b, &c); err == nil && n == 3 {
 		s.AddHorizontal(a, b, c)
 	} else {
 		log.Fatal(vein)
@@ -114,7 +114,7 @@ func (s *Slice) Print() {
 			c := NewCoord(x, y)
 			fmt.Printf("%s", string(s.At(c)))
 		}
-		fmt.Println()
+		fmt.Printf(" %d\n", y)
 	}
 }
 
@@ -144,10 +144,23 @@ func (s *Slice) Flow(from Coord) {
 func (s *Slice) CountWater() int {
 	count := 0
 	for c, v := range s.Grid {
-		if c.Y < s.MinY {
+		if c.Y < s.MinY || c.Y > s.MaxY {
 			continue
 		}
 		if v == '~' || v == '|' {
+			count++
+		}
+	}
+	return count
+}
+
+func (s *Slice) CountStaticWater() int {
+	count := 0
+	for c, v := range s.Grid {
+		if c.Y < s.MinY || c.Y > s.MaxY {
+			continue
+		}
+		if v == '~' {
 			count++
 		}
 	}
@@ -187,12 +200,13 @@ func (s *Slice) GetOverflowRow(from Coord) (flowedThrough, newSources []Coord) {
 	leftLim := from
 	for {
 		leftLim = leftLim.Left()
-		if !s.IsWaterOrClay(leftLim.Down()) {
-			newSources = append(newSources, leftLim)
+		if s.At(leftLim) == '#' {
 			leftLim = leftLim.Right()
 			break
 		}
-		if s.At(leftLim.Left()) == '#' {
+		if !s.IsWaterOrClay(leftLim.Down()) {
+			newSources = append(newSources, leftLim)
+			leftLim = leftLim.Right()
 			break
 		}
 	}
@@ -200,12 +214,13 @@ func (s *Slice) GetOverflowRow(from Coord) (flowedThrough, newSources []Coord) {
 	rightLim := from
 	for {
 		rightLim = rightLim.Right()
-		if !s.IsWaterOrClay(rightLim.Down()) {
-			newSources = append(newSources, rightLim)
+		if s.At(rightLim) == '#' {
 			rightLim = rightLim.Left()
 			break
 		}
-		if s.At(rightLim.Right()) == '#' {
+		if !s.IsWaterOrClay(rightLim.Down()) {
+			newSources = append(newSources, rightLim)
+			rightLim = rightLim.Left()
 			break
 		}
 	}
