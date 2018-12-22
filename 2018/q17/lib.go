@@ -84,6 +84,14 @@ func (s *Slice) AddHorizontal(y, x1, x2 int) {
 }
 
 func (s *Slice) Set(c Coord, v rune) {
+	if s.At(c) != '.' && s.At(c) != v && s.At(c) != '|' {
+		s.Grid[c] = '*'
+		s.Print()
+		fmt.Printf("c = %+v\n", c)
+		fmt.Printf("s.At(c) = %+v\n", string(s.At(c)))
+		fmt.Printf("v = %+v\n", string(v))
+		panic("oops")
+	}
 	s.Grid[c] = v
 	if c.X < s.MinX {
 		s.MinX = c.X
