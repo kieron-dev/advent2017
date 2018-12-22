@@ -18,21 +18,32 @@ func C(x, y int) Coord {
 }
 
 type Area struct {
-	Grid [][]rune
+	Grid        [][]rune
+	InitialGrid [][]rune
 }
 
 func NewArea(in io.Reader) *Area {
 	a := Area{}
 	a.Grid = [][]rune{}
+	a.InitialGrid = [][]rune{}
 
 	scanner := bufio.NewScanner(in)
 	for scanner.Scan() {
 		line := scanner.Text()
 		line = strings.Trim(line, "\n")
 		a.Grid = append(a.Grid, []rune(line))
+		a.InitialGrid = append(a.InitialGrid, []rune(line))
 	}
 
 	return &a
+}
+
+func (a *Area) Reset() {
+	for r, row := range a.InitialGrid {
+		for c, v := range row {
+			a.Grid[r][c] = v
+		}
+	}
 }
 
 func (a *Area) Print() {
@@ -78,6 +89,48 @@ func (a *Area) Score() int {
 		}
 	}
 	return trees * yards
+}
+
+func (a *Area) Signature() string {
+	r := ""
+	for _, row := range a.Grid {
+		r += string(row)
+	}
+	return r
+}
+
+func (a *Area) GetPeriod() (start, length int) {
+	sigs := map[string]int{}
+	i := 0
+	for {
+		sig := a.Signature()
+		if v, ok := sigs[sig]; ok {
+			a.Reset()
+			return v, i - v
+		}
+		sigs[sig] = i
+		i++
+		a.Step()
+	}
+}
+
+func (a *Area) GetBigFutureScore(n int) int {
+	start, period := a.GetPeriod()
+	if n < start {
+		log.Fatal("not late enough", n)
+	}
+
+	for i := 0; i < start; i++ {
+		a.Step()
+	}
+
+	step := n - start
+	step %= period
+
+	for i := 0; i < step; i++ {
+		a.Step()
+	}
+	return a.Score()
 }
 
 func (a *Area) NextState(c Coord) rune {
