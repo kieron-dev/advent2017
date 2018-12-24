@@ -34,13 +34,25 @@ seti 9 0 5`)
 		Expect(a).To(Equal(6))
 	})
 
+	It("runs part A a few times", func() {
+		f, err := os.Open("input")
+		Expect(err).NotTo(HaveOccurred())
+		c := q19.NewComputer(f)
+
+		for { //i := 0; i < 4000; i++ {
+			fmt.Printf("%d %q %v", c.IP, c.Instructions[c.IP], c.Registers)
+			c.ExecuteNext()
+			fmt.Printf(" %v\n", c.Registers)
+		}
+	})
+
 	FIt("runs part b a few times", func() {
 		f, err := os.Open("input")
 		Expect(err).NotTo(HaveOccurred())
 		c := q19.NewComputer(f)
 		c.SetRegisters(1, 0, 0, 0, 0, 0)
 
-		for i := 0; i < 40; i++ {
+		for i := 0; i < 400; i++ {
 			fmt.Printf("%d %q %v", c.IP, c.Instructions[c.IP], c.Registers)
 			c.ExecuteNext()
 			fmt.Printf(" %v\n", c.Registers)
