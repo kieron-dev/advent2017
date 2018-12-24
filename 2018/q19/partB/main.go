@@ -21,27 +21,17 @@ func main() {
 	//2
 	r4 = 1
 
-	//3
-	r3 = r2 * r4
-
 	//4
-	if r3 == r1 {
-		r3 = 1
+	if r2*r4 == r1 {
 		//7
 		r0 += r2
-	} else {
-		r3 = 0
 	}
 
 	//8
 	r4 += 1
 
 	//9
-	if r4 > r1 {
-		r3 = 1
-		// goto 12
-	} else {
-		r3 = 0
+	if r4 <= r1 {
 		// goto 3
 	}
 
