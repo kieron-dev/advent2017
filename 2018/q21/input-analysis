@@ -1,0 +1,37 @@
+#ip 2
+seti 123 0 3       # 1: r3 = 123
+bani 3 456 3       # r3 &= 456
+eqri 3 72 3        # if r3 != 72 goto 1, else goto 5
+addr 3 2 2         #
+seti 0 0 2         #
+
+seti 0 0 3         # 5: r3 = 0
+bori 3 65536 1     # 6: r1 = r3 | 1<<16
+seti 4921097 0 3   # r3 = 4921097
+bani 1 255 4       # 8: first byte of r1 -> r4
+addr 3 4 3         # r3 += r4
+bani 3 16777215 3  # first 3 bytes of r3 -> r3
+muli 3 65899 3     # r3 *= 65899
+bani 3 16777215 3  # first 3 bytes of r3 -> r3
+gtir 256 1 4       # if r1 < 256, goto 28, else goto 17
+addr 4 2 2         #
+addi 2 1 2         #
+seti 27 8 2        #
+
+seti 0 5 4         # 17: r4 = 0
+addi 4 1 5         # 18: r5 = r4+1
+muli 5 256 5       # r5 *= 256 (<<8)
+gtrr 5 1 5         # if r5 > r1, goto 26, else goto 24
+addr 5 2 2         #
+addi 2 1 2         #
+seti 25 1 2        #
+
+addi 4 1 4         # 24: r4++
+seti 17 8 2        # goto 18
+
+setr 4 3 1         # 26: r1 = r4
+seti 7 9 2         # goto 8
+
+eqrr 3 0 4         # 28: if r3 == r0, exit, else goto 6
+addr 4 2 2
+seti 5 4 2
