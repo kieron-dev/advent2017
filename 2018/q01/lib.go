@@ -5,46 +5,55 @@ import (
 	"io"
 	"log"
 	"strconv"
+	"strings"
 )
 
-func SolveA(in io.Reader) int {
-	freq := 0
-	scanner := bufio.NewScanner(in)
-
-	for scanner.Scan() {
-		num, err := strconv.Atoi(scanner.Text())
-		if err != nil {
-			log.Fatal(err)
-		}
-		freq += num
-	}
-
-	return freq
+type Calibrator struct {
+	nums []int
 }
 
-func SolveB(in io.Reader) int {
-	nums := []int{}
+func NewCalibrator(in io.Reader) *Calibrator {
+	c := Calibrator{}
+	c.LoadFile(in)
 
+	return &c
+}
+
+func (c *Calibrator) LoadFile(in io.Reader) {
 	scanner := bufio.NewScanner(in)
-
 	for scanner.Scan() {
-		num, err := strconv.Atoi(scanner.Text())
-		if err != nil {
-			log.Fatal(err)
-		}
-		nums = append(nums, num)
+		line := scanner.Text()
+		line = strings.Trim(line, "\n")
+		c.nums = append(c.nums, atoi(line))
 	}
+}
 
-	freq := 0
-	freqs := map[int]bool{}
+func atoi(s string) int {
+	n, err := strconv.Atoi(s)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return n
+}
 
+func (c *Calibrator) Add() int {
+	s := 0
+	for _, n := range c.nums {
+		s += n
+	}
+	return s
+}
+
+func (c *Calibrator) FirstRepeat() int {
+	visited := map[int]bool{}
+	s := 0
 	for {
-		for _, n := range nums {
-			freq += n
-			if freqs[freq] {
-				return freq
+		for _, n := range c.nums {
+			s += n
+			if visited[s] {
+				return s
 			}
-			freqs[freq] = true
+			visited[s] = true
 		}
 	}
 }
