@@ -22,10 +22,10 @@ var _ = Describe("Computer", func() {
 		Expect(c.Calculate()).To(Equal(2))
 	})
 
-	It("can prime then calculate", func() {
+	It("can panic with slice indexes then return -1", func() {
 		c.SetInput("1,0,0,0,99")
 		c.Prime(12, 02)
-		Expect(c.Calculate()).To(Equal(2))
+		Expect(c.TryCalculate()).To(Equal(-1))
 	})
 
 })
