@@ -10,6 +10,7 @@ type Grid struct {
 	cells map[[2]int]int
 	x     int
 	y     int
+	t     int
 }
 
 func NewGrid() *Grid {
@@ -19,40 +20,48 @@ func NewGrid() *Grid {
 }
 
 func (g *Grid) Move(moves string) {
-	t := 0
 	for _, move := range strings.Split(moves, ",") {
-		n, err := strconv.Atoi(move[1:])
-		if err != nil {
-			panic(err)
-		}
-		delta := 1
-		var attr *int
-
-		switch move[0] {
-		case 'U':
-			attr = &g.y
-		case 'D':
-			delta = -1
-			attr = &g.y
-		case 'L':
-			delta = -1
-			attr = &g.x
-		case 'R':
-			attr = &g.x
-		}
-
-		for i := 0; i < n; i++ {
-			*attr += delta
-			t++
-			g.recordCell(t)
-		}
+		g.advance(move)
 	}
 }
 
-func (g *Grid) recordCell(n int) {
+func (g *Grid) advance(move string) {
+	n := getLength(move)
+	moveFn := getMoveFn(move)
+
+	for i := 0; i < n; i++ {
+		moveFn(g)
+		g.t++
+		g.recordCell()
+	}
+}
+
+func getLength(move string) int {
+	n, err := strconv.Atoi(move[1:])
+	if err != nil {
+		panic(err)
+	}
+	return n
+}
+
+func getMoveFn(move string) func(g *Grid) {
+	switch move[0] {
+	case 'U':
+		return func(g *Grid) { g.y++ }
+	case 'D':
+		return func(g *Grid) { g.y-- }
+	case 'L':
+		return func(g *Grid) { g.x-- }
+	case 'R':
+		return func(g *Grid) { g.x++ }
+	}
+	panic("eh?")
+}
+
+func (g *Grid) recordCell() {
 	coord := [2]int{g.x, g.y}
 	if g.cells[coord] == 0 {
-		g.cells[coord] = n
+		g.cells[coord] = g.t
 	}
 }
 
