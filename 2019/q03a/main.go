@@ -8,15 +8,10 @@ import (
 )
 
 func main() {
-	file, err := os.Open(os.Args[1])
-	if err != nil {
-		panic(err)
-	}
-
 	fileReader := advent2019.FileReader{}
 	var grids []*advent2019.Grid
 
-	fileReader.Each(file, func(line string) {
+	fileReader.Each(os.Stdin, func(line string) {
 		grid := advent2019.NewGrid()
 		grid.Move(line)
 		grids = append(grids, grid)
