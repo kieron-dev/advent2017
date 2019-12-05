@@ -89,14 +89,13 @@ func (g *PWGen) increment() error {
 	for i := len - 1; i >= 0; i-- {
 		if g.cur[i] < 9 {
 			g.cur[i]++
+			for j := i + 1; j < len; j++ {
+				g.cur[j] = g.cur[i]
+			}
 			return nil
 		}
 		if i == 0 {
 			return errors.New("eol")
-		}
-		val := g.cur[i-1] + 1
-		for j := i; j < len; j++ {
-			g.cur[j] = val
 		}
 	}
 	return errors.New("oops")
