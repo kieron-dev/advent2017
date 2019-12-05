@@ -6,7 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = FDescribe("PWGen", func() {
+var _ = Describe("PWGen", func() {
 	var (
 		generator *advent2019.PWGen
 		min       int

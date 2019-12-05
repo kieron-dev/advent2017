@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"bytes"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -15,10 +15,9 @@ func main() {
 		panic(err)
 	}
 
-	c := advent2019.NewComputer(nil)
-	c.SetInput(strings.TrimSpace(string(all)))
-	c.Prime(12, 02)
-	out := c.Calculate()
+	in := bytes.NewBuffer([]byte("1\n"))
 
-	fmt.Printf("out = %+v\n", out)
+	c := advent2019.NewComputer(in)
+	c.SetInput(strings.TrimSpace(string(all)))
+	c.Calculate()
 }

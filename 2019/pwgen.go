@@ -4,7 +4,7 @@ import (
 	"errors"
 )
 
-const len = 6
+const LEN = 6
 
 type PWGen struct {
 	min      int
@@ -20,7 +20,7 @@ func NewPWGen(min, max int, exactly2 bool) *PWGen {
 		exactly2: exactly2,
 	}
 	g.cur = make([]int, 6)
-	for i := 0; i < len; i++ {
+	for i := 0; i < LEN; i++ {
 		g.cur[i] = 1
 	}
 	for g.Current() < g.min {
@@ -34,7 +34,7 @@ func NewPWGen(min, max int, exactly2 bool) *PWGen {
 
 func (g *PWGen) Current() int {
 	r := 0
-	for i := 0; i < len; i++ {
+	for i := 0; i < LEN; i++ {
 		r = 10*r + g.cur[i]
 	}
 	return r
@@ -58,7 +58,7 @@ func (g *PWGen) Next() (int, error) {
 func (g *PWGen) hasConsecSameDigits() bool {
 	last := g.cur[0]
 
-	for i := 1; i < len; i++ {
+	for i := 1; i < LEN; i++ {
 		if g.cur[i] == last {
 			return true
 		}
@@ -70,7 +70,7 @@ func (g *PWGen) hasConsecSameDigits() bool {
 func (g *PWGen) HasExactly2ConsecSameDigits() bool {
 	last := -1
 	l := 0
-	for i := 0; i < len; i++ {
+	for i := 0; i < LEN; i++ {
 		if g.cur[i] == last {
 			l++
 			continue
@@ -86,10 +86,10 @@ func (g *PWGen) HasExactly2ConsecSameDigits() bool {
 }
 
 func (g *PWGen) increment() error {
-	for i := len - 1; i >= 0; i-- {
+	for i := LEN - 1; i >= 0; i-- {
 		if g.cur[i] < 9 {
 			g.cur[i]++
-			for j := i + 1; j < len; j++ {
+			for j := i + 1; j < LEN; j++ {
 				g.cur[j] = g.cur[i]
 			}
 			return nil
