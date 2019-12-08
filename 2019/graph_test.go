@@ -6,7 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = FDescribe("Graph", func() {
+var _ = Describe("Graph", func() {
 
 	var (
 		g *advent2019.Graph
