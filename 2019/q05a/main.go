@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bytes"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -10,14 +10,22 @@ import (
 )
 
 func main() {
-	all, err := ioutil.ReadFile(os.Args[1])
+	all, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {
 		panic(err)
 	}
 
-	in := bytes.NewBuffer([]byte("1\n"))
+	in := make(chan int, 10)
+	out := make(chan int, 10)
 
-	c := advent2019.NewComputer(in)
+	in <- 1
+
+	c := advent2019.NewComputer(in, out)
 	c.SetInput(strings.TrimSpace(string(all)))
 	c.Calculate()
+	close(out)
+
+	for res := range out {
+		fmt.Printf("res = %+v\n", res)
+	}
 }

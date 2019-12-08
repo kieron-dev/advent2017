@@ -1,6 +1,6 @@
 module github.com/kieron-pivotal/advent2017/advent2019
 
-go 1.13
+go 1.12
 
 require (
 	github.com/onsi/ginkgo v1.10.3

@@ -19,7 +19,7 @@ func main() {
 
 	for noun := 0; noun < 100; noun++ {
 		for verb := 0; verb < 100; verb++ {
-			c := advent2019.NewComputer(nil)
+			c := advent2019.NewComputer(nil, nil)
 			c.SetInput(strings.TrimSpace(string(all)))
 			c.Prime(noun, verb)
 
