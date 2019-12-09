@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"math/big"
 	"os"
 	"strings"
 
@@ -15,14 +16,14 @@ func main() {
 		panic(err)
 	}
 
-	in := make(chan int, 10)
-	out := make(chan int, 10)
+	in := make(chan big.Int, 1)
+	out := make(chan big.Int, 10)
 
-	in <- 5
+	in <- *big.NewInt(5)
 	c := advent2019.NewComputer(in, out)
 	c.SetInput(strings.TrimSpace(string(all)))
 	c.Calculate()
 
 	res := <-out
-	fmt.Printf("res = %+v\n", res)
+	fmt.Printf("res = %+v\n", res.String())
 }

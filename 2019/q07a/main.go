@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"math/big"
 	"os"
 	"strings"
 
@@ -15,19 +16,19 @@ func main() {
 		panic(err)
 	}
 
-	max := 0
+	max := big.NewInt(0)
 
 	permHelper := advent2019.Perms{}
-	for _, perm := range permHelper.All([]int{0, 1, 2, 3, 4}) {
+	for _, perm := range permHelper.All([]int64{0, 1, 2, 3, 4}) {
 		arr := advent2019.NewArray(5)
 		arr.SetProgram(strings.TrimSpace(string(contents)))
 		arr.SetPhase(perm)
 		arr.WriteInitialInput(0)
 		arr.Run()
 		val := arr.GetResult()
-		if val > max {
-			max = val
+		if val.Cmp(max) > 0 {
+			max.Set(val)
 		}
 	}
-	fmt.Printf("max = %+v\n", max)
+	fmt.Printf("max = %+v\n", max.String())
 }
