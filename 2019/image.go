@@ -1,7 +1,6 @@
 package advent2019
 
 import (
-	"fmt"
 	"math"
 	"strconv"
 )
@@ -94,15 +93,17 @@ func (l *Layer) Count(n int) int {
 	return c
 }
 
-func (l *Layer) Print() {
+func (l *Layer) String() string {
+	out := ""
 	for _, row := range l.pixels {
 		for _, p := range row {
 			if p == 0 {
-				fmt.Print(" ")
+				out += " "
 			} else {
-				fmt.Print("X")
+				out += "X"
 			}
 		}
-		fmt.Println()
+		out += "\n"
 	}
+	return out
 }
