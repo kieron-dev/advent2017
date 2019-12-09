@@ -12,7 +12,7 @@ var _ = Describe("Perms", func() {
 
 	It("produces 6 distinct perms of 3 chars", func() {
 		permHelper := advent2019.Perms{}
-		all := permHelper.All([]int{1, 2, 3})
+		all := permHelper.All([]int64{1, 2, 3})
 
 		m := map[string]bool{}
 		for _, p := range all {

@@ -2,15 +2,15 @@ package advent2019
 
 type Perms struct{}
 
-func (p Perms) All(elements []int) [][]int {
-	var res [][]int
+func (p Perms) All(elements []int64) [][]int64 {
+	var res [][]int64
 	generate(len(elements), elements, &res)
 	return res
 }
 
-func generate(k int, elements []int, out *[][]int) {
+func generate(k int, elements []int64, out *[][]int64) {
 	if k == 1 {
-		p := make([]int, len(elements))
+		p := make([]int64, len(elements))
 		copy(p, elements)
 		*out = append(*out, p)
 		return

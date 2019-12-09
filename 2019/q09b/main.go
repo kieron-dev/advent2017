@@ -11,22 +11,21 @@ import (
 )
 
 func main() {
-	all, err := ioutil.ReadAll(os.Stdin)
+	progBytes, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {
 		panic(err)
 	}
 
 	in := make(chan big.Int, 1)
-	out := make(chan big.Int, 10)
-
-	in <- *big.NewInt(1)
+	out := make(chan big.Int, 20)
 
 	c := advent2019.NewComputer(in, out)
-	c.SetInput(strings.TrimSpace(string(all)))
+	c.SetInput(strings.TrimSpace(string(progBytes)))
+	in <- *big.NewInt(2)
 	c.Calculate()
-	close(out)
 
-	for res := range out {
-		fmt.Printf("res = %+v\n", res.String())
+	close(out)
+	for n := range out {
+		fmt.Printf("n.String() = %+v\n", n.String())
 	}
 }
