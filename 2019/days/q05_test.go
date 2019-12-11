@@ -2,7 +2,6 @@ package days_test
 
 import (
 	"io/ioutil"
-	"math/big"
 	"strings"
 
 	"github.com/kieron-pivotal/advent2017/advent2019"
@@ -13,8 +12,8 @@ import (
 var _ = Describe("Q05", func() {
 	var (
 		all []byte
-		in  chan big.Int
-		out chan big.Int
+		in  chan string
+		out chan string
 		c   *advent2019.Computer
 	)
 
@@ -24,13 +23,13 @@ var _ = Describe("Q05", func() {
 		if err != nil {
 			panic(err)
 		}
-		in = make(chan big.Int, 1)
-		out = make(chan big.Int, 10)
+		in = make(chan string, 1)
+		out = make(chan string, 10)
 		c = advent2019.NewComputer(in, out)
 	})
 
 	It("does part A", func() {
-		in <- *big.NewInt(1)
+		in <- "1"
 
 		c.SetInput(strings.TrimSpace(string(all)))
 		c.Calculate()
@@ -38,17 +37,17 @@ var _ = Describe("Q05", func() {
 
 		var last string
 		for res := range out {
-			last = res.String()
+			last = res
 		}
 		Expect(last).To(Equal("13210611"))
 	})
 
 	It("does part B", func() {
-		in <- *big.NewInt(5)
+		in <- "5"
 		c.SetInput(strings.TrimSpace(string(all)))
 		c.Calculate()
 
 		res := <-out
-		Expect(res.String()).To(Equal("584126"))
+		Expect(res).To(Equal("584126"))
 	})
 })

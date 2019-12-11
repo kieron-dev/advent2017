@@ -14,13 +14,13 @@ var _ = Describe("Computer", func() {
 
 	var (
 		c   *advent2019.Computer
-		in  chan big.Int
-		out chan big.Int
+		in  chan string
+		out chan string
 	)
 
 	BeforeEach(func() {
-		in = make(chan big.Int, 20)
-		out = make(chan big.Int, 200)
+		in = make(chan string, 20)
+		out = make(chan string, 200)
 		c = advent2019.NewComputer(in, out)
 	})
 
@@ -37,11 +37,11 @@ var _ = Describe("Computer", func() {
 
 	It("works with new modes", func() {
 		c.SetInput("3,0,4,0,99")
-		in <- *big.NewInt(44)
+		in <- "44"
 		res := c.Calculate()
 		Expect(res.Int64()).To(Equal(int64(44)))
 		output := <-out
-		Expect((&output).Cmp(big.NewInt(44))).To(Equal(0))
+		Expect(output).To(Equal("44"))
 	})
 
 	It("works with relative base mode", func() {
@@ -52,7 +52,7 @@ var _ = Describe("Computer", func() {
 		close(out)
 		output := []string{}
 		for n := range out {
-			output = append(output, n.String())
+			output = append(output, n)
 		}
 		Expect(strings.Join(output, ",")).To(Equal(input))
 	})
@@ -62,7 +62,7 @@ var _ = Describe("Computer", func() {
 		c.SetInput(input)
 		c.Calculate()
 		n := <-out
-		Expect(n.String()).To(HaveLen(16))
+		Expect(n).To(HaveLen(16))
 	})
 
 	It("works with another big input", func() {
@@ -70,9 +70,34 @@ var _ = Describe("Computer", func() {
 		c.SetInput(input)
 		c.Calculate()
 		n := <-out
-		Expect(n.String()).To(Equal("1125899906842624"))
+		Expect(n).To(Equal("1125899906842624"))
 	})
 
+	Context("operations", func() {
+		It("does addition", func() {
+			input := "1,7,8,0,4,0,99,100,201"
+			c.SetInput(input)
+			c.Calculate()
+			n := <-out
+			Expect(n).To(Equal("301"))
+		})
+
+		It("does addition with immediate numbers to add", func() {
+			input := "1101,42,-1,0,4,0,99"
+			c.SetInput(input)
+			c.Calculate()
+			n := <-out
+			Expect(n).To(Equal("41"))
+		})
+
+		It("does addition storing in a relative position", func() {
+			input := "109,3,21001,9,-1,10,4,13,99,42"
+			c.SetInput(input)
+			c.Calculate()
+			n := <-out
+			Expect(n).To(Equal("41"))
+		})
+	})
 })
 
 var _ = Describe("Computer Array", func() {

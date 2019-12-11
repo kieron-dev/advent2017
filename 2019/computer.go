@@ -8,11 +8,11 @@ import (
 type Computer struct {
 	registers    map[int64]*big.Int
 	relativeBase int64
-	in           chan big.Int
-	out          chan big.Int
+	in           chan string
+	out          chan string
 }
 
-func NewComputer(in, out chan big.Int) *Computer {
+func NewComputer(in, out chan string) *Computer {
 	c := Computer{
 		in:           in,
 		out:          out,
@@ -36,7 +36,6 @@ func (c *Computer) Prime(noun, verb int64) {
 
 func (c *Computer) Calculate() *big.Int {
 	ip := int64(0)
-	var jump int
 	for {
 		inst := new(big.Int)
 		opCode := int(inst.Mod(c.registers[ip], big.NewInt(100)).Int64())
@@ -49,7 +48,7 @@ func (c *Computer) Calculate() *big.Int {
 				c.registers[idx] = new(big.Int)
 			}
 			c.registers[idx].Add(c.ValueAt(ip, 1), c.ValueAt(ip, 2))
-			jump = 4
+			ip += 4
 
 		case 2:
 			idx := c.IndexFor(ip, 3)
@@ -58,7 +57,7 @@ func (c *Computer) Calculate() *big.Int {
 				c.registers[idx] = new(big.Int)
 			}
 			c.registers[idx].Mul(c.ValueAt(ip, 1), c.ValueAt(ip, 2))
-			jump = 4
+			ip += 4
 
 		case 3:
 			idx := c.IndexFor(ip, 1)
@@ -67,27 +66,25 @@ func (c *Computer) Calculate() *big.Int {
 				c.registers[idx] = new(big.Int)
 			}
 			input := <-c.in
-			c.registers[idx].Set(&input)
-			jump = 2
+			c.registers[idx].SetString(input, 10)
+			ip += 2
 
 		case 4:
-			c.out <- *c.ValueAt(ip, 1)
-			jump = 2
+			c.out <- c.ValueAt(ip, 1).String()
+			ip += 2
 
 		case 5:
 			if c.ValueAt(ip, 1).Cmp(big.NewInt(0)) != 0 {
 				ip = c.ValueAt(ip, 2).Int64()
-				jump = 0
 			} else {
-				jump = 3
+				ip += 3
 			}
 
 		case 6:
 			if c.ValueAt(ip, 1).Cmp(big.NewInt(0)) == 0 {
 				ip = c.ValueAt(ip, 2).Int64()
-				jump = 0
 			} else {
-				jump = 3
+				ip += 3
 			}
 
 		case 7:
@@ -101,7 +98,7 @@ func (c *Computer) Calculate() *big.Int {
 			} else {
 				c.registers[idx].SetInt64(0)
 			}
-			jump = 4
+			ip += 4
 
 		case 8:
 			idx := c.IndexFor(ip, 3)
@@ -114,17 +111,15 @@ func (c *Computer) Calculate() *big.Int {
 			} else {
 				c.registers[idx].SetInt64(0)
 			}
-			jump = 4
+			ip += 4
 
 		case 9:
 			c.relativeBase += c.ValueAt(ip, 1).Int64()
-			jump = 2
+			ip += 2
 
 		case 99:
 			return c.registers[0]
 		}
-
-		ip += int64(jump)
 	}
 }
 
