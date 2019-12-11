@@ -33,7 +33,6 @@ type Robot struct {
 	grid       map[grid.Coord]Color
 	minX, maxX int
 	minY, maxY int
-	// previous  map[[4]int]bool
 }
 
 func New() *Robot {
@@ -46,7 +45,6 @@ func New() *Robot {
 	r.maxY = -1000
 	r.minX = 1000
 	r.minY = 1000
-	// r.previous = map[[4]int]bool{}
 	return &r
 }
 
