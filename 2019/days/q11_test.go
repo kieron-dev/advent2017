@@ -3,7 +3,6 @@ package days_test
 import (
 	"io/ioutil"
 	"strings"
-	"sync"
 
 	"github.com/kieron-pivotal/advent2017/advent2019/grid"
 	"github.com/kieron-pivotal/advent2017/advent2019/robot"
@@ -58,10 +57,7 @@ var _ = Describe("Q11", func() {
 
 	It("does part B", func() {
 		running := make(chan struct{})
-		result := make(chan int, 1)
-
-		var wg sync.WaitGroup
-		wg.Add(1)
+		result := make(chan struct{})
 
 		r.Set(grid.NewCoord(0, 0), robot.White)
 
@@ -71,7 +67,6 @@ var _ = Describe("Q11", func() {
 		}()
 
 		go func() {
-			defer wg.Done()
 			for {
 				open := false
 				select {
@@ -80,7 +75,7 @@ var _ = Describe("Q11", func() {
 					open = true
 				}
 				if !open {
-					result <- r.Visited()
+					close(result)
 					break
 				}
 
@@ -88,7 +83,7 @@ var _ = Describe("Q11", func() {
 			}
 		}()
 
-		wg.Wait()
+		<-result
 		output := r.GridToString()
 		expectedOutput := ` #  #  ##  #### #  # #     ##  ###  ####   
  #  # #  # #    #  # #    #  # #  # #      
