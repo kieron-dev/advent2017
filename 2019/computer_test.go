@@ -1,7 +1,7 @@
 package advent2019_test
 
 import (
-	"math/big"
+	"fmt"
 	"strings"
 
 	. "github.com/onsi/ginkgo"
@@ -14,34 +14,34 @@ var _ = Describe("Computer", func() {
 
 	var (
 		c   *advent2019.Computer
-		in  chan string
-		out chan string
+		in  chan int64
+		out chan int64
 	)
 
 	BeforeEach(func() {
-		in = make(chan string, 20)
-		out = make(chan string, 200)
+		in = make(chan int64, 20)
+		out = make(chan int64, 200)
 		c = advent2019.NewComputer(in, out)
 	})
 
 	It("calculates simple inputs", func() {
 		c.SetInput("1,0,0,0,99")
-		Expect(c.Calculate().Int64()).To(Equal(int64(2)))
+		Expect(c.Calculate()).To(Equal(int64(2)))
 	})
 
 	It("can panic with slice indexes then return -1", func() {
 		c.SetInput("1,0,0,0,99")
 		c.Prime(12, -2)
-		Expect(c.TryCalculate().Int64()).To(Equal(int64(-1)))
+		Expect(c.TryCalculate()).To(Equal(int64(-1)))
 	})
 
 	It("works with new modes", func() {
 		c.SetInput("3,0,4,0,99")
-		in <- "44"
+		in <- 44
 		res := c.Calculate()
-		Expect(res.Int64()).To(Equal(int64(44)))
+		Expect(res).To(Equal(int64(44)))
 		output := <-out
-		Expect(output).To(Equal("44"))
+		Expect(output).To(Equal(int64(44)))
 	})
 
 	It("works with relative base mode", func() {
@@ -52,7 +52,7 @@ var _ = Describe("Computer", func() {
 		close(out)
 		output := []string{}
 		for n := range out {
-			output = append(output, n)
+			output = append(output, fmt.Sprintf("%d", n))
 		}
 		Expect(strings.Join(output, ",")).To(Equal(input))
 	})
@@ -62,7 +62,7 @@ var _ = Describe("Computer", func() {
 		c.SetInput(input)
 		c.Calculate()
 		n := <-out
-		Expect(n).To(HaveLen(16))
+		Expect(fmt.Sprintf("%d", n)).To(HaveLen(16))
 	})
 
 	It("works with another big input", func() {
@@ -70,7 +70,7 @@ var _ = Describe("Computer", func() {
 		c.SetInput(input)
 		c.Calculate()
 		n := <-out
-		Expect(n).To(Equal("1125899906842624"))
+		Expect(n).To(Equal(int64(1125899906842624)))
 	})
 
 	Context("operations", func() {
@@ -79,7 +79,7 @@ var _ = Describe("Computer", func() {
 			c.SetInput(input)
 			c.Calculate()
 			n := <-out
-			Expect(n).To(Equal("301"))
+			Expect(n).To(Equal(int64(301)))
 		})
 
 		It("does addition with immediate numbers to add", func() {
@@ -87,7 +87,7 @@ var _ = Describe("Computer", func() {
 			c.SetInput(input)
 			c.Calculate()
 			n := <-out
-			Expect(n).To(Equal("41"))
+			Expect(n).To(Equal(int64(41)))
 		})
 
 		It("does addition storing in a relative position", func() {
@@ -95,7 +95,7 @@ var _ = Describe("Computer", func() {
 			c.SetInput(input)
 			c.Calculate()
 			n := <-out
-			Expect(n).To(Equal("41"))
+			Expect(n).To(Equal(int64(41)))
 		})
 	})
 })
@@ -106,7 +106,7 @@ var _ = Describe("Computer Array", func() {
 		size  int
 		prog  string
 		phase []int64
-		out   *big.Int
+		out   int64
 	)
 
 	BeforeEach(func() {
@@ -125,6 +125,6 @@ var _ = Describe("Computer Array", func() {
 	})
 
 	It("runs a pipeline", func() {
-		Expect(out.Cmp(big.NewInt(43210))).To(Equal(0))
+		Expect(out).To(Equal(int64(43210)))
 	})
 })

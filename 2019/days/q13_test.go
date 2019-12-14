@@ -38,7 +38,7 @@ var _ = Describe("Q13", func() {
 	It("does part B", func() {
 		g.Pay()
 		score := g.Run()
-		Expect(score).To(Equal(19297))
+		Expect(score).To(Equal(int64(19297)))
 	})
 
 })

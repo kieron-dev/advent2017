@@ -2,7 +2,6 @@ package robot
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/kieron-pivotal/advent2017/advent2019"
 	"github.com/kieron-pivotal/advent2017/advent2019/grid"
@@ -27,8 +26,8 @@ const (
 type Robot struct {
 	computer   *advent2019.Computer
 	pos        grid.Coord
-	in         chan string
-	out        chan string
+	in         chan int64
+	out        chan int64
 	direction  Direction
 	grid       map[grid.Coord]Color
 	minX, maxX int
@@ -37,8 +36,8 @@ type Robot struct {
 
 func New() *Robot {
 	r := Robot{}
-	r.in = make(chan string, 10)
-	r.out = make(chan string, 10)
+	r.in = make(chan int64, 10)
+	r.out = make(chan int64, 10)
 	r.computer = advent2019.NewComputer(r.in, r.out)
 	r.grid = map[grid.Coord]Color{}
 	r.maxX = -1000
@@ -51,14 +50,6 @@ func New() *Robot {
 func (r *Robot) RunProg(prog string) {
 	r.computer.SetInput(prog)
 	r.computer.Calculate()
-}
-
-func toInt(s string) int {
-	n, err := strconv.Atoi(s)
-	if err != nil {
-		panic(err)
-	}
-	return n
 }
 
 func (r *Robot) Visited() int {
@@ -81,16 +72,16 @@ func (r *Robot) Move() {
 		r.minY = r.pos.Y()
 	}
 
-	r.in <- fmt.Sprintf("%d", color)
+	r.in <- int64(color)
 
 	newColor := <-r.out
-	r.grid[r.pos] = Color(toInt(newColor))
+	r.grid[r.pos] = Color(newColor)
 	if r.grid[r.pos] < 0 || r.grid[r.pos] > 1 {
 		panic(fmt.Sprintf("invalid return color: %d", r.grid[r.pos]))
 	}
 
 	turn := <-r.out
-	if turn == "0" {
+	if turn == 0 {
 		r.direction = (r.direction + 3) % 4
 	} else {
 		r.direction = (r.direction + 1) % 4
