@@ -12,7 +12,7 @@ import (
 var _ = Describe("Q09", func() {
 	var (
 		progBytes []byte
-		in, out   chan string
+		in, out   chan int64
 		c         *advent2019.Computer
 	)
 
@@ -23,31 +23,31 @@ var _ = Describe("Q09", func() {
 			panic(err)
 		}
 
-		in = make(chan string, 1)
-		out = make(chan string, 20)
+		in = make(chan int64, 1)
+		out = make(chan int64, 20)
 
 		c = advent2019.NewComputer(in, out)
 		c.SetInput(strings.TrimSpace(string(progBytes)))
 	})
 
 	It("does part A", func() {
-		in <- "1"
+		in <- 1
 		c.Calculate()
 
 		close(out)
-		var last string
+		var last int64
 		for n := range out {
 			last = n
 		}
-		Expect(last).To(Equal("3454977209"))
+		Expect(last).To(Equal(int64(3454977209)))
 	})
 
 	It("does part B", func() {
-		in <- "2"
+		in <- 2
 		c.Calculate()
 
 		close(out)
 		res := <-out
-		Expect(res).To(Equal("50120"))
+		Expect(res).To(Equal(int64(50120)))
 	})
 })

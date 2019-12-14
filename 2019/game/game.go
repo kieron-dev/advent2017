@@ -1,11 +1,9 @@
 package game
 
 import (
-	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -35,22 +33,22 @@ var graphics = map[TileType]rune{
 
 type Game struct {
 	computer       *advent2019.Computer
-	in, out        chan string
+	in, out        chan int64
 	tiles          map[grid.Coord]TileType
 	minX, minY     int
 	maxX, maxY     int
 	mutex          sync.Mutex
 	cells          []termbox.Cell
 	tw, th         int
-	ballX, paddleX int
+	ballX, paddleX int64
 	ballDir        int
 }
 
 func NewGame() *Game {
 	g := Game{}
 
-	g.in = make(chan string, 2)
-	g.out = make(chan string, 3)
+	g.in = make(chan int64, 2)
+	g.out = make(chan int64, 3)
 	g.computer = advent2019.NewComputer(g.in, g.out)
 	g.tiles = map[grid.Coord]TileType{}
 
@@ -75,8 +73,8 @@ func (g *Game) LoadProgram(prog io.Reader) {
 	g.computer.SetInput(strings.TrimSpace(string(bytes)))
 }
 
-func (g *Game) SetJoystick(n int) {
-	g.in <- fmt.Sprintf("%d", n)
+func (g *Game) SetJoystick(n int64) {
+	g.in <- n
 }
 
 func (g *Game) reallocTermBuffer(w, h int) {
@@ -85,7 +83,7 @@ func (g *Game) reallocTermBuffer(w, h int) {
 	g.th = h
 }
 
-func (g *Game) Run() int {
+func (g *Game) Run() int64 {
 
 	if os.Getenv("SHOW_GRID") == "true" {
 		err := termbox.Init()
@@ -120,11 +118,11 @@ func (g *Game) Run() int {
 	go func() {
 		for {
 			if g.ballDir == 1 && g.ballX-g.paddleX > 0 {
-				g.in <- "1"
+				g.in <- 1
 			} else if g.ballDir == -1 && g.ballX-g.paddleX < 0 {
-				g.in <- "-1"
+				g.in <- -1
 			} else {
-				g.in <- "0"
+				g.in <- 0
 			}
 			if os.Getenv("SHOW_GRID") == "true" {
 				time.Sleep(time.Millisecond * 10)
@@ -134,30 +132,19 @@ func (g *Game) Run() int {
 		}
 	}()
 
-	score := 0
-	for xStr := range g.out {
-		yStr := <-g.out
-		tileTypeStr := <-g.out
+	score := int64(0)
+	for x := range g.out {
+		y := <-g.out
+		tileTypeN := <-g.out
 
-		x, err := strconv.Atoi(xStr)
-		if err != nil {
-			panic(err)
-		}
-		y, err := strconv.Atoi(yStr)
-		if err != nil {
-			panic(err)
-		}
-		tileType, err := strconv.Atoi(tileTypeStr)
-		if err != nil {
-			panic(err)
-		}
+		tileType := TileType(tileTypeN)
 
 		if x == -1 && y == 0 {
-			score = tileType
+			score = tileTypeN
 			continue
 		}
 
-		if TileType(tileType) == Ball {
+		if tileType == Ball {
 			if g.ballX != 0 {
 				if g.ballX > x {
 					g.ballDir = -1
@@ -172,7 +159,7 @@ func (g *Game) Run() int {
 			g.paddleX = x
 		}
 
-		g.AddTile(x, y, TileType(tileType))
+		g.AddTile(int(x), int(y), TileType(tileType))
 		if os.Getenv("SHOW_GRID") == "true" {
 			g.updateFrame()
 		}

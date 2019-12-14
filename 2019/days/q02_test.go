@@ -2,7 +2,6 @@ package days_test
 
 import (
 	"io/ioutil"
-	"math/big"
 	"strings"
 
 	"github.com/kieron-pivotal/advent2017/advent2019"
@@ -29,11 +28,11 @@ var _ = Describe("Q02", func() {
 		c.Prime(12, 02)
 		out := c.Calculate()
 
-		Expect(out.String()).To(Equal("5866714"))
+		Expect(out).To(Equal(int64(5866714)))
 	})
 
 	It("does part B", func() {
-		target := big.NewInt(19690720)
+		target := int64(19690720)
 		var noun, verb int64
 		soln := false
 
@@ -44,7 +43,7 @@ var _ = Describe("Q02", func() {
 				c.SetInput(strings.TrimSpace(string(all)))
 				c.Prime(noun, verb)
 
-				if c.TryCalculate().Cmp(target) == 0 {
+				if c.TryCalculate() == target {
 					soln = true
 					break out
 				}

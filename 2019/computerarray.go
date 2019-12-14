@@ -1,8 +1,6 @@
 package advent2019
 
 import (
-	"fmt"
-	"math/big"
 	"sync"
 )
 
@@ -10,15 +8,15 @@ type ComputerArray struct {
 	size       int
 	isFeedback bool
 	computers  []*Computer
-	inputs     []chan string
+	inputs     []chan int64
 }
 
 func NewArray(size int) *ComputerArray {
 	arr := ComputerArray{size: size}
 	for i := 0; i < size; i++ {
-		arr.inputs = append(arr.inputs, make(chan string, 100))
+		arr.inputs = append(arr.inputs, make(chan int64, 100))
 	}
-	arr.inputs = append(arr.inputs, make(chan string, 100))
+	arr.inputs = append(arr.inputs, make(chan int64, 100))
 	for i := 0; i < size; i++ {
 		comp := NewComputer(arr.inputs[i], arr.inputs[i+1])
 		arr.computers = append(arr.computers, comp)
@@ -29,7 +27,7 @@ func NewArray(size int) *ComputerArray {
 func NewFeedbackArray(size int) *ComputerArray {
 	arr := ComputerArray{size: size, isFeedback: true}
 	for i := 0; i < size; i++ {
-		arr.inputs = append(arr.inputs, make(chan string, 100))
+		arr.inputs = append(arr.inputs, make(chan int64, 100))
 	}
 	for i := 0; i < size; i++ {
 		comp := NewComputer(arr.inputs[i], arr.inputs[(i+1)%size])
@@ -40,12 +38,12 @@ func NewFeedbackArray(size int) *ComputerArray {
 
 func (a *ComputerArray) SetPhase(phases []int64) {
 	for i := 0; i < a.size; i++ {
-		a.inputs[i] <- fmt.Sprintf("%d", phases[i])
+		a.inputs[i] <- phases[i]
 	}
 }
 
 func (a *ComputerArray) WriteInitialInput(n int64) {
-	a.inputs[0] <- fmt.Sprintf("%d", n)
+	a.inputs[0] <- n
 }
 
 func (a *ComputerArray) SetProgram(prog string) {
@@ -68,14 +66,10 @@ func (a *ComputerArray) Run() {
 	wg.Wait()
 }
 
-func (a *ComputerArray) GetResult() *big.Int {
-	var out big.Int
-	var str string
+func (a *ComputerArray) GetResult() int64 {
 	if a.isFeedback {
-		str = <-a.inputs[0]
+		return <-a.inputs[0]
 	} else {
-		str = <-a.inputs[a.size]
+		return <-a.inputs[a.size]
 	}
-	out.SetString(str, 10)
-	return &out
 }
