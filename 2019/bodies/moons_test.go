@@ -1,7 +1,6 @@
 package bodies_test
 
 import (
-	"fmt"
 	"io"
 	"strings"
 
@@ -99,37 +98,6 @@ var _ = Describe("Moons", func() {
 
 			It("finds the first whole repeat", func() {
 				Expect(s.FirstRepeat()).To(Equal(int64(4686774924)))
-			})
-
-			XIt("outputs some positions", func() {
-				moons := s.Moons()
-				for i := 0; i < 1000000; i++ {
-					xZero := true
-					yZero := true
-					zZero := true
-					for j := 0; j < 4; j++ {
-						if moons[j].Vel().X() != 0 {
-							xZero = false
-						}
-						if moons[j].Vel().Y() != 0 {
-							yZero = false
-						}
-						if moons[j].Vel().Z() != 0 {
-							zZero = false
-						}
-					}
-					if xZero {
-						fmt.Printf("%d: X %d,%d,%d,%d\n", i, moons[0].Pos().X(), moons[1].Pos().X(), moons[2].Pos().X(), moons[3].Pos().X())
-					}
-					if yZero {
-						fmt.Printf("%d: Y %d,%d,%d,%d\n", i, moons[0].Pos().Y(), moons[1].Pos().Y(), moons[2].Pos().Y(), moons[3].Pos().Y())
-					}
-					if zZero {
-						fmt.Printf("%d: Z %d,%d,%d,%d\n", i, moons[0].Pos().Z(), moons[1].Pos().Z(), moons[2].Pos().Z(), moons[3].Pos().Z())
-					}
-
-					s.Tick()
-				}
 			})
 		})
 	})

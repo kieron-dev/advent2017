@@ -33,6 +33,6 @@ var _ = Describe("Q12", func() {
 	})
 
 	It("does part B", func() {
-		Expect(s.FirstRepeat()).To(Equal(int64(0)))
+		Expect(s.FirstRepeat()).To(Equal(int64(469671086427712)))
 	})
 })
