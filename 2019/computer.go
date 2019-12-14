@@ -22,6 +22,10 @@ func NewComputer(in, out chan string) *Computer {
 	return &c
 }
 
+func (c *Computer) SetAddr(addr, val int64) {
+	c.registers[addr] = big.NewInt(val)
+}
+
 func (c *Computer) SetInput(in string) {
 	for i, nstr := range strings.Split(in, ",") {
 		c.registers[int64(i)] = new(big.Int)
