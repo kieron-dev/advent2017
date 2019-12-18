@@ -11,10 +11,9 @@ import (
 
 var _ = Describe("Q05", func() {
 	var (
-		all []byte
-		in  chan int64
-		out chan int64
-		c   *intcode.Computer
+		all     []byte
+		in, out chan int
+		c       *intcode.Computer
 	)
 
 	BeforeEach(func() {
@@ -23,8 +22,8 @@ var _ = Describe("Q05", func() {
 		if err != nil {
 			panic(err)
 		}
-		in = make(chan int64, 1)
-		out = make(chan int64, 10)
+		in = make(chan int, 1)
+		out = make(chan int, 10)
 		c = intcode.NewComputer(in, out)
 	})
 
@@ -35,11 +34,11 @@ var _ = Describe("Q05", func() {
 		c.Calculate()
 		close(out)
 
-		var last int64
+		var last int
 		for res := range out {
 			last = res
 		}
-		Expect(last).To(Equal(int64(13210611)))
+		Expect(last).To(Equal(13210611))
 	})
 
 	It("does part B", func() {
@@ -48,6 +47,6 @@ var _ = Describe("Q05", func() {
 		c.Calculate()
 
 		res := <-out
-		Expect(res).To(Equal(int64(584126)))
+		Expect(res).To(Equal(584126))
 	})
 })

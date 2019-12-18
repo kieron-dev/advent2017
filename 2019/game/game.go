@@ -32,22 +32,22 @@ var graphics = map[TileType]rune{
 
 type Game struct {
 	computer       *intcode.Computer
-	in, out        chan int64
+	in, out        chan int
 	tiles          map[grid.Coord]TileType
 	minX, minY     int
 	maxX, maxY     int
 	mutex          sync.Mutex
 	cells          []termbox.Cell
 	tw, th         int
-	ballX, paddleX int64
+	ballX, paddleX int
 	ballDir        int
 }
 
 func NewGame() *Game {
 	g := Game{}
 
-	g.in = make(chan int64, 2)
-	g.out = make(chan int64, 3)
+	g.in = make(chan int, 2)
+	g.out = make(chan int, 3)
 	g.computer = intcode.NewComputer(g.in, g.out)
 	g.tiles = map[grid.Coord]TileType{}
 
@@ -72,7 +72,7 @@ func (g *Game) LoadProgram(prog io.Reader) {
 	g.computer.SetInput(strings.TrimSpace(string(bytes)))
 }
 
-func (g *Game) SetJoystick(n int64) {
+func (g *Game) SetJoystick(n int) {
 	g.in <- n
 }
 
@@ -82,7 +82,7 @@ func (g *Game) reallocTermBuffer(w, h int) {
 	g.th = h
 }
 
-func (g *Game) Run() int64 {
+func (g *Game) Run() int {
 
 	if os.Getenv("SHOW_GRID") == "true" {
 		err := termbox.Init()
@@ -116,7 +116,7 @@ func (g *Game) Run() int64 {
 		g.computer.Calculate()
 	}()
 
-	score := int64(0)
+	score := 0
 	for x := range g.out {
 		y := <-g.out
 		tileTypeN := <-g.out

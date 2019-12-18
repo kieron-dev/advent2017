@@ -26,9 +26,9 @@ var _ = Describe("Q07", func() {
 	})
 
 	It("does part A", func() {
-		max := int64(0)
+		max := 0
 
-		for _, perm := range permHelper.All([]int64{0, 1, 2, 3, 4}) {
+		for _, perm := range permHelper.All([]int{0, 1, 2, 3, 4}) {
 			arr := intcode.NewArray(5)
 			arr.SetProgram(strings.TrimSpace(string(contents)))
 			arr.SetPhase(perm)
@@ -39,13 +39,13 @@ var _ = Describe("Q07", func() {
 				max = val
 			}
 		}
-		Expect(max).To(Equal(int64(262086)))
+		Expect(max).To(Equal(262086))
 	})
 
 	It("does part B", func() {
-		max := int64(0)
+		max := 0
 
-		for _, perm := range permHelper.All([]int64{5, 6, 7, 8, 9}) {
+		for _, perm := range permHelper.All([]int{5, 6, 7, 8, 9}) {
 			arr := intcode.NewFeedbackArray(5)
 			arr.SetProgram(strings.TrimSpace(string(contents)))
 			arr.SetPhase(perm)
@@ -56,6 +56,6 @@ var _ = Describe("Q07", func() {
 				max = val
 			}
 		}
-		Expect(max).To(Equal(int64(5371621)))
+		Expect(max).To(Equal(5371621))
 	})
 })

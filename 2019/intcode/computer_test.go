@@ -13,35 +13,34 @@ import (
 var _ = Describe("Intcode Computer", func() {
 
 	var (
-		c   *intcode.Computer
-		in  chan int64
-		out chan int64
+		c       *intcode.Computer
+		in, out chan int
 	)
 
 	BeforeEach(func() {
-		in = make(chan int64, 20)
-		out = make(chan int64, 200)
+		in = make(chan int, 20)
+		out = make(chan int, 200)
 		c = intcode.NewComputer(in, out)
 	})
 
 	It("calculates simple inputs", func() {
 		c.SetInput("1,0,0,0,99")
-		Expect(c.Calculate()).To(Equal(int64(2)))
+		Expect(c.Calculate()).To(Equal(2))
 	})
 
 	It("can panic with slice indexes then return -1", func() {
 		c.SetInput("1,0,0,0,99")
 		c.Prime(12, -2)
-		Expect(c.TryCalculate()).To(Equal(int64(-1)))
+		Expect(c.TryCalculate()).To(Equal(-1))
 	})
 
 	It("works with new modes", func() {
 		c.SetInput("3,0,4,0,99")
 		in <- 44
 		res := c.Calculate()
-		Expect(res).To(Equal(int64(44)))
+		Expect(res).To(Equal(44))
 		output := <-out
-		Expect(output).To(Equal(int64(44)))
+		Expect(output).To(Equal(44))
 	})
 
 	It("works with relative base mode", func() {
@@ -70,7 +69,7 @@ var _ = Describe("Intcode Computer", func() {
 		c.SetInput(input)
 		c.Calculate()
 		n := <-out
-		Expect(n).To(Equal(int64(1125899906842624)))
+		Expect(n).To(Equal(1125899906842624))
 	})
 
 	Context("operations", func() {
@@ -79,7 +78,7 @@ var _ = Describe("Intcode Computer", func() {
 			c.SetInput(input)
 			c.Calculate()
 			n := <-out
-			Expect(n).To(Equal(int64(301)))
+			Expect(n).To(Equal(301))
 		})
 
 		It("does addition with immediate numbers to add", func() {
@@ -87,7 +86,7 @@ var _ = Describe("Intcode Computer", func() {
 			c.SetInput(input)
 			c.Calculate()
 			n := <-out
-			Expect(n).To(Equal(int64(41)))
+			Expect(n).To(Equal(41))
 		})
 
 		It("does addition storing in a relative position", func() {
@@ -95,7 +94,7 @@ var _ = Describe("Intcode Computer", func() {
 			c.SetInput(input)
 			c.Calculate()
 			n := <-out
-			Expect(n).To(Equal(int64(41)))
+			Expect(n).To(Equal(41))
 		})
 	})
 })
@@ -105,15 +104,15 @@ var _ = Describe("Computer Array", func() {
 		arr   *intcode.ComputerArray
 		size  int
 		prog  string
-		phase []int64
-		out   int64
+		phase []int
+		out   int
 	)
 
 	BeforeEach(func() {
 		size = 5
 		arr = intcode.NewArray(size)
 		prog = "3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0"
-		phase = []int64{4, 3, 2, 1, 0}
+		phase = []int{4, 3, 2, 1, 0}
 	})
 
 	JustBeforeEach(func() {
@@ -125,6 +124,6 @@ var _ = Describe("Computer Array", func() {
 	})
 
 	It("runs a pipeline", func() {
-		Expect(out).To(Equal(int64(43210)))
+		Expect(out).To(Equal(43210))
 	})
 })

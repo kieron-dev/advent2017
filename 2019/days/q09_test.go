@@ -12,7 +12,7 @@ import (
 var _ = Describe("Q09", func() {
 	var (
 		progBytes []byte
-		in, out   chan int64
+		in, out   chan int
 		c         *intcode.Computer
 	)
 
@@ -23,8 +23,8 @@ var _ = Describe("Q09", func() {
 			panic(err)
 		}
 
-		in = make(chan int64, 1)
-		out = make(chan int64, 20)
+		in = make(chan int, 1)
+		out = make(chan int, 20)
 
 		c = intcode.NewComputer(in, out)
 		c.SetInput(strings.TrimSpace(string(progBytes)))
@@ -35,11 +35,11 @@ var _ = Describe("Q09", func() {
 		c.Calculate()
 
 		close(out)
-		var last int64
+		var last int
 		for n := range out {
 			last = n
 		}
-		Expect(last).To(Equal(int64(3454977209)))
+		Expect(last).To(Equal(3454977209))
 	})
 
 	It("does part B", func() {
@@ -48,6 +48,6 @@ var _ = Describe("Q09", func() {
 
 		close(out)
 		res := <-out
-		Expect(res).To(Equal(int64(50120)))
+		Expect(res).To(Equal(50120))
 	})
 })

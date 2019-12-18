@@ -26,8 +26,7 @@ const (
 type Robot struct {
 	computer   *intcode.Computer
 	pos        grid.Coord
-	in         chan int64
-	out        chan int64
+	in, out    chan int
 	direction  Direction
 	grid       map[grid.Coord]Color
 	minX, maxX int
@@ -36,8 +35,8 @@ type Robot struct {
 
 func New() *Robot {
 	r := Robot{}
-	r.in = make(chan int64, 10)
-	r.out = make(chan int64, 10)
+	r.in = make(chan int, 10)
+	r.out = make(chan int, 10)
 	r.computer = intcode.NewComputer(r.in, r.out)
 	r.grid = map[grid.Coord]Color{}
 	r.maxX = -1000
@@ -72,7 +71,7 @@ func (r *Robot) Move() {
 		r.minY = r.pos.Y()
 	}
 
-	r.in <- int64(color)
+	r.in <- int(color)
 
 	newColor := <-r.out
 	r.grid[r.pos] = Color(newColor)
