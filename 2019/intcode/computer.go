@@ -6,43 +6,43 @@ import (
 )
 
 type Computer struct {
-	registers    map[int64]int64
-	relativeBase int64
-	in           chan int64
-	out          chan int64
+	registers    map[int]int
+	relativeBase int
+	in           chan int
+	out          chan int
 }
 
-func NewComputer(in, out chan int64) *Computer {
+func NewComputer(in, out chan int) *Computer {
 	c := Computer{
 		in:           in,
 		out:          out,
-		registers:    map[int64]int64{},
+		registers:    map[int]int{},
 		relativeBase: 0,
 	}
 	return &c
 }
 
-func (c *Computer) SetAddr(addr, val int64) {
+func (c *Computer) SetAddr(addr, val int) {
 	c.registers[addr] = val
 }
 
 func (c *Computer) SetInput(in string) {
 	for i, nstr := range strings.Split(in, ",") {
-		n, err := strconv.ParseInt(nstr, 10, 64)
+		n, err := strconv.Atoi(nstr)
 		if err != nil {
 			panic(err)
 		}
-		c.registers[int64(i)] = n
+		c.registers[i] = n
 	}
 }
 
-func (c *Computer) Prime(noun, verb int64) {
+func (c *Computer) Prime(noun, verb int) {
 	c.registers[1] = noun
 	c.registers[2] = verb
 }
 
-func (c *Computer) Calculate() int64 {
-	ip := int64(0)
+func (c *Computer) Calculate() int {
+	ip := 0
 	for {
 		opCode := c.registers[ip] % 100
 		switch opCode {
@@ -108,7 +108,7 @@ func (c *Computer) Calculate() int64 {
 	}
 }
 
-func (c *Computer) ValueAt(base int64, offset int64) int64 {
+func (c *Computer) ValueAt(base, offset int) int {
 	idx := c.IndexFor(base, offset)
 	if idx < 0 {
 		panic("idx out of range")
@@ -116,9 +116,9 @@ func (c *Computer) ValueAt(base int64, offset int64) int64 {
 	return c.registers[idx]
 }
 
-func (c *Computer) IndexFor(base int64, offset int64) int64 {
-	mask := int64(100)
-	for i := int64(1); i < offset; i++ {
+func (c *Computer) IndexFor(base, offset int) int {
+	mask := 100
+	for i := 1; i < offset; i++ {
 		mask *= 10
 	}
 
@@ -138,7 +138,7 @@ func (c *Computer) IndexFor(base int64, offset int64) int64 {
 	}
 }
 
-func (c *Computer) TryCalculate() (ret int64) {
+func (c *Computer) TryCalculate() (ret int) {
 
 	defer func() {
 		if r := recover(); r != nil {

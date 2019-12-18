@@ -8,15 +8,15 @@ type ComputerArray struct {
 	size       int
 	isFeedback bool
 	computers  []*Computer
-	inputs     []chan int64
+	inputs     []chan int
 }
 
 func NewArray(size int) *ComputerArray {
 	arr := ComputerArray{size: size}
 	for i := 0; i < size; i++ {
-		arr.inputs = append(arr.inputs, make(chan int64, 100))
+		arr.inputs = append(arr.inputs, make(chan int, 100))
 	}
-	arr.inputs = append(arr.inputs, make(chan int64, 100))
+	arr.inputs = append(arr.inputs, make(chan int, 100))
 	for i := 0; i < size; i++ {
 		comp := NewComputer(arr.inputs[i], arr.inputs[i+1])
 		arr.computers = append(arr.computers, comp)
@@ -27,7 +27,7 @@ func NewArray(size int) *ComputerArray {
 func NewFeedbackArray(size int) *ComputerArray {
 	arr := ComputerArray{size: size, isFeedback: true}
 	for i := 0; i < size; i++ {
-		arr.inputs = append(arr.inputs, make(chan int64, 100))
+		arr.inputs = append(arr.inputs, make(chan int, 100))
 	}
 	for i := 0; i < size; i++ {
 		comp := NewComputer(arr.inputs[i], arr.inputs[(i+1)%size])
@@ -36,13 +36,13 @@ func NewFeedbackArray(size int) *ComputerArray {
 	return &arr
 }
 
-func (a *ComputerArray) SetPhase(phases []int64) {
+func (a *ComputerArray) SetPhase(phases []int) {
 	for i := 0; i < a.size; i++ {
 		a.inputs[i] <- phases[i]
 	}
 }
 
-func (a *ComputerArray) WriteInitialInput(n int64) {
+func (a *ComputerArray) WriteInitialInput(n int) {
 	a.inputs[0] <- n
 }
 
@@ -66,7 +66,7 @@ func (a *ComputerArray) Run() {
 	wg.Wait()
 }
 
-func (a *ComputerArray) GetResult() int64 {
+func (a *ComputerArray) GetResult() int {
 	if a.isFeedback {
 		return <-a.inputs[0]
 	} else {

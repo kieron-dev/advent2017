@@ -28,12 +28,12 @@ var _ = Describe("Q02", func() {
 		c.Prime(12, 02)
 		out := c.Calculate()
 
-		Expect(out).To(Equal(int64(5866714)))
+		Expect(out).To(Equal(5866714))
 	})
 
 	It("does part B", func() {
-		target := int64(19690720)
-		var noun, verb int64
+		target := 19690720
+		var noun, verb int
 		soln := false
 
 	out:
@@ -50,7 +50,7 @@ var _ = Describe("Q02", func() {
 			}
 		}
 		Expect(soln).To(BeTrue())
-		Expect(100*noun + verb).To(Equal(int64(5208)))
+		Expect(100*noun + verb).To(Equal(5208))
 	})
 
 })
