@@ -3,8 +3,8 @@ package robot
 import (
 	"fmt"
 
-	"github.com/kieron-pivotal/advent2017/advent2019"
 	"github.com/kieron-pivotal/advent2017/advent2019/grid"
+	"github.com/kieron-pivotal/advent2017/advent2019/intcode"
 )
 
 type Color int
@@ -24,7 +24,7 @@ const (
 )
 
 type Robot struct {
-	computer   *advent2019.Computer
+	computer   *intcode.Computer
 	pos        grid.Coord
 	in         chan int64
 	out        chan int64
@@ -38,7 +38,7 @@ func New() *Robot {
 	r := Robot{}
 	r.in = make(chan int64, 10)
 	r.out = make(chan int64, 10)
-	r.computer = advent2019.NewComputer(r.in, r.out)
+	r.computer = intcode.NewComputer(r.in, r.out)
 	r.grid = map[grid.Coord]Color{}
 	r.maxX = -1000
 	r.maxY = -1000

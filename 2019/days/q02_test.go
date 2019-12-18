@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/kieron-pivotal/advent2017/advent2019"
+	"github.com/kieron-pivotal/advent2017/advent2019/intcode"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -23,7 +23,7 @@ var _ = Describe("Q02", func() {
 	})
 
 	It("does part A", func() {
-		c := advent2019.NewComputer(nil, nil)
+		c := intcode.NewComputer(nil, nil)
 		c.SetInput(strings.TrimSpace(string(all)))
 		c.Prime(12, 02)
 		out := c.Calculate()
@@ -39,7 +39,7 @@ var _ = Describe("Q02", func() {
 	out:
 		for noun = 0; noun < 100; noun++ {
 			for verb = 0; verb < 100; verb++ {
-				c := advent2019.NewComputer(nil, nil)
+				c := intcode.NewComputer(nil, nil)
 				c.SetInput(strings.TrimSpace(string(all)))
 				c.Prime(noun, verb)
 

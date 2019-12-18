@@ -1,4 +1,4 @@
-package advent2019
+package intcode
 
 import (
 	"sync"

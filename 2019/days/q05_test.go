@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/kieron-pivotal/advent2017/advent2019"
+	"github.com/kieron-pivotal/advent2017/advent2019/intcode"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -14,7 +14,7 @@ var _ = Describe("Q05", func() {
 		all []byte
 		in  chan int64
 		out chan int64
-		c   *advent2019.Computer
+		c   *intcode.Computer
 	)
 
 	BeforeEach(func() {
@@ -25,7 +25,7 @@ var _ = Describe("Q05", func() {
 		}
 		in = make(chan int64, 1)
 		out = make(chan int64, 10)
-		c = advent2019.NewComputer(in, out)
+		c = intcode.NewComputer(in, out)
 	})
 
 	It("does part A", func() {

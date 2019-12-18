@@ -1,4 +1,4 @@
-package advent2019_test
+package intcode_test
 
 import (
 	"fmt"
@@ -7,13 +7,13 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/kieron-pivotal/advent2017/advent2019"
+	"github.com/kieron-pivotal/advent2017/advent2019/intcode"
 )
 
-var _ = Describe("Computer", func() {
+var _ = Describe("Intcode Computer", func() {
 
 	var (
-		c   *advent2019.Computer
+		c   *intcode.Computer
 		in  chan int64
 		out chan int64
 	)
@@ -21,7 +21,7 @@ var _ = Describe("Computer", func() {
 	BeforeEach(func() {
 		in = make(chan int64, 20)
 		out = make(chan int64, 200)
-		c = advent2019.NewComputer(in, out)
+		c = intcode.NewComputer(in, out)
 	})
 
 	It("calculates simple inputs", func() {
@@ -102,7 +102,7 @@ var _ = Describe("Computer", func() {
 
 var _ = Describe("Computer Array", func() {
 	var (
-		arr   *advent2019.ComputerArray
+		arr   *intcode.ComputerArray
 		size  int
 		prog  string
 		phase []int64
@@ -111,7 +111,7 @@ var _ = Describe("Computer Array", func() {
 
 	BeforeEach(func() {
 		size = 5
-		arr = advent2019.NewArray(size)
+		arr = intcode.NewArray(size)
 		prog = "3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0"
 		phase = []int64{4, 3, 2, 1, 0}
 	})

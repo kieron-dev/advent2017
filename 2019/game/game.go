@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kieron-pivotal/advent2017/advent2019"
 	"github.com/kieron-pivotal/advent2017/advent2019/grid"
+	"github.com/kieron-pivotal/advent2017/advent2019/intcode"
 	"github.com/nsf/termbox-go"
 )
 
@@ -32,7 +32,7 @@ var graphics = map[TileType]rune{
 }
 
 type Game struct {
-	computer       *advent2019.Computer
+	computer       *intcode.Computer
 	in, out        chan int64
 	tiles          map[grid.Coord]TileType
 	minX, minY     int
@@ -49,7 +49,7 @@ func NewGame() *Game {
 
 	g.in = make(chan int64, 2)
 	g.out = make(chan int64, 3)
-	g.computer = advent2019.NewComputer(g.in, g.out)
+	g.computer = intcode.NewComputer(g.in, g.out)
 	g.tiles = map[grid.Coord]TileType{}
 
 	g.minX = 1000
