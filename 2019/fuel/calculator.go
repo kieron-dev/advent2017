@@ -1,9 +1,7 @@
 package fuel
 
 import (
-	"fmt"
 	"io"
-	"sort"
 	"strconv"
 	"strings"
 
@@ -113,61 +111,26 @@ func (c *Calculator) NodeCount() int {
 	return len(c.nodes)
 }
 
-func mapToString(m map[string]int) string {
-	keys := make([]string, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	l := make([]string, len(m))
-	for i, n := range keys {
-		l[i] = fmt.Sprintf("%s:%d", n, m[n])
-	}
-	return strings.Join(l, ",")
-}
-
 func (c *Calculator) FuelForOre(ore int) int {
-	overs := map[string]int{}
-	periodOre := 0
-	period := 0
-	history := map[string]int{}
+	unitOre, unitOvers := c.OreForFuel(map[string]int{})
 
-	for {
-		var oreAmount int
-		oreAmount, overs = c.OreForFuel(overs)
+	mult := ore / unitOre
 
-		key := mapToString(overs)
-		if v, ok := history[key]; ok {
-			fmt.Printf("found key %s at period %d. currently %d\n", key, v, period)
-			break
-		}
-		history[key] = period
-
-		if periodOre+oreAmount > ore {
-			return period
-		}
-
-		periodOre += oreAmount
-		period++
-
-		if len(overs) == 0 {
-			fmt.Printf("period = %+v\n", period)
-			fmt.Printf("periodOre = %+v\n", periodOre)
-			break
-		}
+	fuel := mult
+	overs := map[string]int{"ORE": ore - mult*unitOre}
+	for k, v := range unitOvers {
+		overs[k] = v * mult
 	}
-	periods := ore / periodOre
-	fuel := period * periods
-	ore = ore % periodOre
+	c.reduce(overs)
 
-	for {
-		var reqOre int
-		reqOre, overs = c.OreForFuel(overs)
-		if ore < reqOre {
-			break
+	for overs["ORE"] >= unitOre {
+		mult = overs["ORE"] / unitOre
+		fuel += mult
+		overs["ORE"] -= mult * unitOre
+		for k, v := range unitOvers {
+			overs[k] += v * mult
 		}
-		ore -= reqOre
-		fuel++
+		c.reduce(overs)
 	}
 
 	return fuel
@@ -213,18 +176,22 @@ func (c *Calculator) OreForFuel(overs map[string]int) (ore int, leftover map[str
 		}
 	}
 
-	c.reduce(overs)
 	return reqs["ORE"], overs
 }
 
 func (c *Calculator) reduce(overs map[string]int) {
-	didReduction := false
 	for {
+		didReduction := false
+
 		for name, num := range overs {
 			node := c.nodes[name]
+			if len(node.parents) == 0 {
+				continue
+			}
 			if node.num > num {
 				continue
 			}
+
 			didReduction = true
 			toRemove := num / node.num
 			over := overs[name] - toRemove*node.num
@@ -236,8 +203,8 @@ func (c *Calculator) reduce(overs map[string]int) {
 			for _, p := range node.parents {
 				overs[p.node.name] += p.count * toRemove
 			}
-			fmt.Printf("overs = %+v\n", overs)
 		}
+
 		if !didReduction {
 			break
 		}
