@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/kieron-pivotal/advent2017/advent2019"
+	"github.com/kieron-pivotal/advent2017/advent2019/intcode"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -13,7 +13,7 @@ var _ = Describe("Q09", func() {
 	var (
 		progBytes []byte
 		in, out   chan int64
-		c         *advent2019.Computer
+		c         *intcode.Computer
 	)
 
 	BeforeEach(func() {
@@ -26,7 +26,7 @@ var _ = Describe("Q09", func() {
 		in = make(chan int64, 1)
 		out = make(chan int64, 20)
 
-		c = advent2019.NewComputer(in, out)
+		c = intcode.NewComputer(in, out)
 		c.SetInput(strings.TrimSpace(string(progBytes)))
 	})
 
