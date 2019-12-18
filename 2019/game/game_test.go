@@ -36,7 +36,7 @@ var _ = Describe("Game", func() {
 		os.Setenv("SHOW_GRID", "true")
 		g.Pay()
 		score := g.Run()
-		Expect(score).To(Equal(19297))
+		Expect(score).To(Equal(int64(19297)))
 	})
 
 })
