@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/kieron-pivotal/advent2017/advent2019/grid"
 	"github.com/kieron-pivotal/advent2017/advent2019/intcode"
@@ -94,42 +93,27 @@ func (g *Game) Run() int64 {
 		g.reallocTermBuffer(termbox.Size())
 	}
 
-	// go func() {
-	// 	for {
-	// 		switch ev := termbox.PollEvent(); ev.Type {
-	// 		case termbox.EventKey:
-	// 			if ev.Key == termbox.KeyArrowLeft {
-	// 				g.in <- "-1"
-	// 			} else if ev.Key == termbox.KeyArrowDown {
-	// 				g.in <- "0"
-	// 			} else if ev.Key == termbox.KeyArrowRight {
-	// 				g.in <- "1"
-	// 			}
-	// 		}
-	// 	}
-	// }()
+	if os.Getenv("MANUAL_CONTROL") == "true" {
+		go func() {
+			for {
+				switch ev := termbox.PollEvent(); ev.Type {
+				case termbox.EventKey:
+					if ev.Key == termbox.KeyArrowLeft {
+						g.in <- -1
+					} else if ev.Key == termbox.KeyArrowDown {
+						g.in <- 0
+					} else if ev.Key == termbox.KeyArrowRight {
+						g.in <- 1
+					}
+				}
+			}
+		}()
+	}
 
 	go func() {
 		defer close(g.out)
 
 		g.computer.Calculate()
-	}()
-
-	go func() {
-		for {
-			if g.ballDir == 1 && g.ballX-g.paddleX > 0 {
-				g.in <- 1
-			} else if g.ballDir == -1 && g.ballX-g.paddleX < 0 {
-				g.in <- -1
-			} else {
-				g.in <- 0
-			}
-			if os.Getenv("SHOW_GRID") == "true" {
-				time.Sleep(time.Millisecond * 10)
-			} else {
-				time.Sleep(time.Millisecond * 2)
-			}
-		}
 	}()
 
 	score := int64(0)
@@ -153,6 +137,16 @@ func (g *Game) Run() int64 {
 				}
 			}
 			g.ballX = x
+
+			if os.Getenv("MANUAL_CONTROL") != "true" {
+				if g.ballDir == 1 && g.ballX-g.paddleX > 0 {
+					g.in <- 1
+				} else if g.ballDir == -1 && g.ballX-g.paddleX < 0 {
+					g.in <- -1
+				} else {
+					g.in <- 0
+				}
+			}
 		}
 
 		if TileType(tileType) == HPaddle {
