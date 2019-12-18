@@ -34,7 +34,7 @@ var _ = Describe("Q14", func() {
 		Expect(ore).To(Equal(201324))
 	})
 
-	FIt("does part B", func() {
+	It("does part B", func() {
 		Expect(calc.FuelForOre(1000000000000)).To(Equal(6326857))
 	})
 })

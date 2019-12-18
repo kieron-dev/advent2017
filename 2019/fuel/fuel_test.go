@@ -92,7 +92,7 @@ var _ = Describe("Fuel", func() {
 	},
 		Entry("3", ex3, 82892753),
 		Entry("4", ex4, 5586022),
-		FEntry("5", ex5, 460664),
+		Entry("5", ex5, 460664),
 	)
 
 })
