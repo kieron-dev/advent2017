@@ -30,10 +30,6 @@ var _ = Describe("Game", func() {
 	})
 
 	It("can win the game", func() {
-		if os.Getenv("SLOW_TESTS") != "true" {
-			Skip("Set env var SLOW_TESTS=true to run this test")
-		}
-		os.Setenv("SHOW_GRID", "true")
 		g.Pay()
 		score := g.Run()
 		Expect(score).To(Equal(int64(19297)))
