@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = FDescribe("Manyworlds", func() {
+var _ = Describe("Manyworlds", func() {
 
 	var (
 		w    *manyworlds.World
