@@ -26,8 +26,12 @@ var _ = Describe("Q18", func() {
 		w.LoadMap(input)
 	})
 
-	FIt("does part A", func() {
+	It("does part A", func() {
 		Expect(w.MinStepsToCollectKeys()).To(Equal(4668))
+	})
+
+	It("does part B", func() {
+
 	})
 
 })

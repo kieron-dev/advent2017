@@ -98,4 +98,21 @@ var _ = Describe("Manyworlds", func() {
 			Expect(w.MinStepsToCollectKeys()).To(Equal(136))
 		})
 	})
+
+	FContext("multiple start points", func() {
+		BeforeEach(func() {
+			maze = strings.NewReader(`###############
+#d.ABC.#.....a#
+######@#@######
+###############
+######@#@######
+#b.....#.....c#
+###############
+`)
+		})
+
+		It("takes 24 steps", func() {
+			Expect(w.MinStepsToCollectKeys()).To(Equal(24))
+		})
+	})
 })
