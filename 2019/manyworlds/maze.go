@@ -5,6 +5,7 @@ import (
 	"io"
 	"math"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/kieron-pivotal/advent2017/advent2019"
@@ -21,7 +22,7 @@ type graphNode struct {
 type World struct {
 	grid       map[grid.Coord]rune
 	keyCount   int
-	startPos   grid.Coord
+	startPos   []grid.Coord
 	graphNodes map[rune]*graphNode
 }
 
@@ -42,7 +43,7 @@ func (w *World) LoadMap(r io.Reader) {
 			coord := grid.NewCoord(col, row)
 			w.grid[coord] = val
 			if val == rune('@') {
-				w.startPos = coord
+				w.startPos = append(w.startPos, coord)
 				w.grid[coord] = rune('.')
 			}
 			if val >= 'a' && val <= 'z' {
@@ -52,7 +53,9 @@ func (w *World) LoadMap(r io.Reader) {
 		row++
 	})
 
-	w.makeGraph()
+	for label, coord := range w.startPos {
+		w.makeGraph(coord, rune(label))
+	}
 }
 
 func (w *World) getConnectedNodes(from *graphNode) []*graphNode {
@@ -100,10 +103,10 @@ func (w *World) getConnectedNodes(from *graphNode) []*graphNode {
 	return connected
 }
 
-func (w *World) makeGraph() {
+func (w *World) makeGraph(from grid.Coord, label rune) {
 	start := &graphNode{
-		label:  '0',
-		coord:  w.startPos,
+		label:  label,
+		coord:  from,
 		linked: map[rune]int{},
 	}
 
@@ -144,10 +147,6 @@ func (w *World) KeysCount() int {
 	return w.keyCount
 }
 
-func (w *World) StartPos() grid.Coord {
-	return w.startPos
-}
-
 func (w *World) CharAt(c grid.Coord) rune {
 	return w.grid[c]
 }
@@ -155,7 +154,7 @@ func (w *World) CharAt(c grid.Coord) rune {
 type path struct {
 	steps int
 	keys  map[rune]bool
-	pos   rune
+	pos   []rune
 }
 
 func (p path) ToString() string {
@@ -165,17 +164,27 @@ func (p path) ToString() string {
 	}
 	sort.Strings(keySlice)
 	keys := strings.Join(keySlice, "")
-	return fmt.Sprintf("%c:%s", p.pos, keys)
+	posStrs := []string{}
+	for _, r := range p.pos {
+		posStrs = append(posStrs, strconv.Itoa(int(r)))
+	}
+	positions := strings.Join(posStrs, ",")
+	return fmt.Sprintf("%s:%s", positions, keys)
 }
 
 func (w *World) MinStepsToCollectKeys() int {
 	min := math.MaxInt32
 
+	startLabels := []rune{}
+	for i := range w.startPos {
+		startLabels = append(startLabels, rune(i))
+	}
+
 	stack := []path{
 		path{
 			steps: 0,
 			keys:  nil,
-			pos:   '0',
+			pos:   startLabels,
 		},
 	}
 
@@ -195,34 +204,43 @@ func (w *World) MinStepsToCollectKeys() int {
 		}
 		visited[curPathKey] = curPath.steps
 
-		curNode := w.graphNodes[curPath.pos]
 		keys := curPath.keys
 
-		if curPath.pos >= 'a' && curPath.pos <= 'z' {
-			keys = map[rune]bool{}
-			for k, v := range curPath.keys {
-				keys[k] = v
+		for _, curPos := range curPath.pos {
+			if curPos >= 'a' && curPos <= 'z' {
+				oldKeys := keys
+				keys = map[rune]bool{}
+				for k, v := range oldKeys {
+					keys[k] = v
+				}
+				keys[curPos] = true
 			}
-			keys[curPath.pos] = true
 		}
 
 		if len(keys) == w.keyCount && curPath.steps < min {
 			min = curPath.steps
 		}
 
-		for nextNode, dist := range curNode.linked {
-			if nextNode >= 'A' && nextNode <= 'Z' {
-				lower := 'a' + nextNode - 'A'
-				if !keys[lower] {
-					continue
+		for i, curPos := range curPath.pos {
+			curNode := w.graphNodes[curPos]
+			for nextNode, dist := range curNode.linked {
+				if nextNode >= 'A' && nextNode <= 'Z' {
+					lower := 'a' + nextNode - 'A'
+					if !keys[lower] {
+						continue
+					}
 				}
-			}
 
-			stack = append(stack, path{
-				steps: curPath.steps + dist,
-				keys:  keys,
-				pos:   nextNode,
-			})
+				nextPos := make([]rune, len(curPath.pos))
+				copy(nextPos, curPath.pos)
+				nextPos[i] = nextNode
+
+				stack = append(stack, path{
+					steps: curPath.steps + dist,
+					keys:  keys,
+					pos:   nextPos,
+				})
+			}
 		}
 	}
 

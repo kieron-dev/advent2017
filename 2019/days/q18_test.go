@@ -12,13 +12,14 @@ import (
 var _ = Describe("Q18", func() {
 
 	var (
-		w     *manyworlds.World
-		input io.Reader
+		w         *manyworlds.World
+		input     io.Reader
+		inputName string
 	)
 
-	BeforeEach(func() {
+	JustBeforeEach(func() {
 		var err error
-		input, err = os.Open("input18")
+		input, err = os.Open(inputName)
 		if err != nil {
 			panic(err)
 		}
@@ -26,12 +27,27 @@ var _ = Describe("Q18", func() {
 		w.LoadMap(input)
 	})
 
-	It("does part A", func() {
-		Expect(w.MinStepsToCollectKeys()).To(Equal(4668))
+	Context("part A", func() {
+		BeforeEach(func() {
+			inputName = "input18"
+		})
+
+		It("does part A", func() {
+			Expect(w.MinStepsToCollectKeys()).To(Equal(4668))
+		})
 	})
 
-	It("does part B", func() {
+	Context("part B", func() {
+		BeforeEach(func() {
+			if os.Getenv("INCLUDE_SLOW") != "true" {
+				Skip(`"$INCLUDE_SLOW" != "true"`)
+			}
+			inputName = "input18b"
+		})
 
+		It("does part B", func() {
+			Expect(w.MinStepsToCollectKeys()).To(Equal(1910))
+		})
 	})
 
 })
