@@ -40,4 +40,9 @@ var _ = Describe("Q19", func() {
 		}
 		Expect(count).To(Equal(215))
 	})
+
+	It("does part B", func() {
+		coords := b.FirstSquare(100)
+		Expect(10000*coords.X() + coords.Y()).To(Equal(7720975))
+	})
 })
