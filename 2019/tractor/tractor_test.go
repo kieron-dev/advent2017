@@ -36,4 +36,14 @@ var _ = Describe("Tractor", func() {
 	It("responds with 0 to (1,0) coord", func() {
 		Expect(b.IsInBeamRange(grid.NewCoord(1, 0))).To(BeFalse())
 	})
+
+	It("can find a 3x3 square in beam", func() {
+		topLeft := b.FirstSquare(3)
+		Expect(b.IsInBeamRange(topLeft)).To(BeTrue())
+		Expect(b.IsInBeamRange(topLeft.Add(grid.NewCoord(0, 2)))).To(BeTrue())
+		Expect(b.IsInBeamRange(topLeft.Add(grid.NewCoord(2, 0)))).To(BeTrue())
+		Expect(b.IsInBeamRange(topLeft.Add(grid.NewCoord(2, 2)))).To(BeTrue())
+		Expect(b.IsInBeamRange(topLeft.Add(grid.NewCoord(0, 3)))).To(BeFalse())
+		Expect(b.IsInBeamRange(topLeft.Add(grid.NewCoord(3, 0)))).To(BeFalse())
+	})
 })
