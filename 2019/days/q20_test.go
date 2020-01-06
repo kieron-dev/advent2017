@@ -23,8 +23,11 @@ var _ = Describe("Q20", func() {
 		d.Load(f)
 	})
 
-	FIt("does part A", func() {
-		Expect(d.ShortestPath()).To(Equal(644))
+	It("does part A", func() {
+		Expect(d.ShortestPath(false)).To(Equal(644))
 	})
 
+	It("does part B", func() {
+		Expect(d.ShortestPath(true)).To(Equal(7798))
+	})
 })
