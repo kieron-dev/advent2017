@@ -22,7 +22,11 @@ func main() {
 	go func() {
 		for {
 			b := d.Output()
-			fmt.Printf("%c", b)
+			if b < 256 {
+				fmt.Printf("%c", b)
+			} else {
+				fmt.Printf("%d\n", b)
+			}
 		}
 	}()
 
