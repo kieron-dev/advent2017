@@ -28,8 +28,8 @@ func (d *Droid) RunProgram() {
 	go d.computer.Calculate()
 }
 
-func (d *Droid) Output() byte {
-	return byte(<-d.out)
+func (d *Droid) Output() int {
+	return <-d.out
 }
 
 func (d *Droid) Input(s string) {
