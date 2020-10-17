@@ -1,7 +1,6 @@
 package days_test
 
 import (
-	"fmt"
 	"io"
 	"os"
 
@@ -30,19 +29,9 @@ var _ = Describe("Q22", func() {
 		Expect(deck.PosOf(2019)).To(Equal(6794))
 	})
 
-	FIt("can do part B", func() {
+	It("can do part B", func() {
 		deck := cards.NewDeck(119315717514047)
 		deck.SetShuffle(shuffles)
-
-		period := deck.Period(2020)
-		fmt.Printf("period = %+v\n", period)
-		rem := 101741582076661 % period
-
-		card := 2020
-		for i := 0; i < rem; i++ {
-			card = deck.CardAt(card)
-		}
-
-		Expect(card).To(Equal(-1))
+		Expect(deck.EquivalentCardAt(2020, 101741582076661)).To(Equal(70725194521472))
 	})
 })

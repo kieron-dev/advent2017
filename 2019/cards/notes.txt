@@ -1,0 +1,16 @@
+f = ax + b
+
+f(f(x)) = a(ax+b) + b
+        = a^2x + b(a+1)
+
+f(f(f(x))) = a(a^2x + b(a+1)) + b
+           = a^3x + ba^2 + ab + b
+           = a^3x + b(a^2 + a + 1)
+
+a^2 -1 = (a+1)(a-1)
+
+a^3 - 1 = (a-1)(a^2+a+1)
+
+So,
+
+f^n(x) = a^n.x + b(a^n - 1)/(a - 1)
