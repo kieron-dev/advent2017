@@ -1,9 +1,11 @@
+// Package cards deals with permutation of a prime-sized deck of cards
 package cards
 
 import (
 	"bufio"
-	"fmt"
 	"io"
+	"log"
+	"math/big"
 	"strconv"
 	"strings"
 )
@@ -50,6 +52,48 @@ func (d *Deck) CardAt(pos int) int {
 	return d.positioning(pos)
 }
 
+func (d *Deck) equivalentTransform() (mult, offset int) {
+	offset = d.CardAt(0)
+	mult = (d.CardAt(1) - d.CardAt(0)) % d.size
+	if mult < 1 {
+		mult += d.size
+	}
+	return
+}
+
+func (d *Deck) EquivalentCardAt(pos, iterations int) int {
+	// ax + b
+	a, b := d.equivalentTransform()
+
+	A := big.NewInt(int64(a))
+	B := big.NewInt(int64(b))
+	I := big.NewInt(int64(iterations))
+	M := big.NewInt(int64(d.size))
+
+	aToI := new(big.Int).Exp(A, I, M)
+
+	mult := aToI
+	var offset *big.Int
+
+	if a == 1 {
+		offset = new(big.Int).Mul(B, I)
+	} else {
+		AMinusOneInv := new(big.Int).ModInverse(big.NewInt(int64(a-1)), M)
+		if AMinusOneInv == nil {
+			log.Fatalf("no inverse of %d in ring size %d", a-1, d.size)
+		}
+		top := new(big.Int).Mul(B, new(big.Int).Sub(aToI, big.NewInt(1)))
+		offset = new(big.Int).Mul(top, AMinusOneInv)
+	}
+
+	P := big.NewInt(int64(pos))
+	prod := new(big.Int).Mul(P, mult)
+	sum := new(big.Int).Add(prod, offset)
+	mod := new(big.Int).Mod(sum, M)
+
+	return int(mod.Int64())
+}
+
 func (d *Deck) Cards() []int {
 	res := make([]int, d.size)
 
@@ -58,24 +102,6 @@ func (d *Deck) Cards() []int {
 	}
 
 	return res
-}
-
-func (d *Deck) Period(pos int) int {
-	cur := pos
-
-	i := 0
-	for {
-		cur = d.CardAt(cur)
-		i++
-		if cur == pos {
-			break
-		}
-		if i%1000000 == 0 {
-			fmt.Printf("i = %+v, pos = %+v\n", i, cur)
-		}
-	}
-
-	return i
 }
 
 func (d *Deck) AddTransform(line string) {
@@ -141,36 +167,16 @@ func (d *Deck) dealWithInc(fn mapping, inc int) mapping {
 }
 
 func (d *Deck) invDealWithInc(fn mapping, inc int) mapping {
-	_, inv, _ := xgcd(inc, d.size)
-	if inv < 0 {
-		inv += d.size
-	}
+	bigMod := big.NewInt(int64(d.size))
+	bigInc := big.NewInt(int64(inc))
+
+	bigInv := new(big.Int).ModInverse(bigInc, bigMod)
 
 	return func(i int) int {
-		return fn((i * inv) % d.size)
-	}
-}
+		bigI := big.NewInt(int64(i))
+		prod := new(big.Int).Mul(bigI, bigInv)
+		mod := new(big.Int).Mod(prod, bigMod)
 
-func xgcd(a, b int) (int, int, int) {
-	a0, a1, b0, b1 := 1, 0, 0, 1
-
-	for {
-		q := a / b
-		a = a % b
-		a0 = a0 - q*a1
-		b0 = b0 - q*b1
-
-		if a == 0 {
-			return b, a1, b1
-		}
-
-		q = b / a
-		b = b % a
-		a1 = a1 - q*a0
-		b1 = b1 - q*b0
-
-		if b == 0 {
-			return a, a0, b0
-		}
+		return fn(int(mod.Int64()))
 	}
 }
