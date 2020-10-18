@@ -4,14 +4,13 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/grid"
-	"github.com/kieron-pivotal/advent2017/advent2019/tractor"
+	"github.com/kieron-dev/advent2017/advent2019/grid"
+	"github.com/kieron-dev/advent2017/advent2019/tractor"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Q19", func() {
-
 	var (
 		b    *tractor.Beam
 		prog string

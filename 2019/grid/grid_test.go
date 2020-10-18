@@ -4,13 +4,12 @@ import (
 	"io"
 	"strings"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/grid"
+	"github.com/kieron-dev/advent2017/advent2019/grid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Grid", func() {
-
 	var (
 		g        *grid.Grid
 		contents io.Reader
@@ -45,7 +44,6 @@ var _ = Describe("Grid", func() {
 	})
 
 	It("can order visible asteroids by angle", func() {
-
 		contents = strings.NewReader(`.#....#####...#..
 ##...##.#####..##
 ##...#...#.#####.
@@ -122,5 +120,4 @@ var _ = Describe("Grid", func() {
 		Expect(g.LaserN(100, best)).To(Equal(grid.NewCoord(10, 16)))
 		Expect(g.LaserN(200, best)).To(Equal(grid.NewCoord(8, 2)))
 	})
-
 })

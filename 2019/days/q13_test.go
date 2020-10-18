@@ -4,13 +4,12 @@ import (
 	"io"
 	"os"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/game"
+	"github.com/kieron-dev/advent2017/advent2019/game"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Q13", func() {
-
 	var (
 		g    *game.Game
 		prog io.Reader
@@ -40,5 +39,4 @@ var _ = Describe("Q13", func() {
 		score := g.Run()
 		Expect(score).To(Equal(19297))
 	})
-
 })

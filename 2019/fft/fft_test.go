@@ -3,17 +3,14 @@ package fft_test
 import (
 	"fmt"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/fft"
+	"github.com/kieron-dev/advent2017/advent2019/fft"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("FFT", func() {
-
-	var (
-		t *fft.Transform
-	)
+	var t *fft.Transform
 
 	BeforeEach(func() {
 		t = fft.NewTransform()

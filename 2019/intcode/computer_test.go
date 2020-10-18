@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/intcode"
+	"github.com/kieron-dev/advent2017/advent2019/intcode"
 )
 
 var _ = Describe("Intcode Computer", func() {

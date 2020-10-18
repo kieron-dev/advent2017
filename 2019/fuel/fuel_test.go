@@ -3,14 +3,13 @@ package fuel_test
 import (
 	"strings"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/fuel"
+	"github.com/kieron-dev/advent2017/advent2019/fuel"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Fuel", func() {
-
 	const (
 		ex1 = `10 ORE => 10 A
 1 ORE => 1 B
@@ -94,5 +93,4 @@ var _ = Describe("Fuel", func() {
 		Entry("4", ex4, 5586022),
 		Entry("5", ex5, 460664),
 	)
-
 })

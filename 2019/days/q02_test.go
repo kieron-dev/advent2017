@@ -4,15 +4,13 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/intcode"
+	"github.com/kieron-dev/advent2017/advent2019/intcode"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Q02", func() {
-	var (
-		all []byte
-	)
+	var all []byte
 
 	BeforeEach(func() {
 		var err error
@@ -52,5 +50,4 @@ var _ = Describe("Q02", func() {
 		Expect(soln).To(BeTrue())
 		Expect(100*noun + verb).To(Equal(5208))
 	})
-
 })

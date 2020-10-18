@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 
-	"github.com/kieron-pivotal/advent2017/advent2019"
+	"github.com/kieron-dev/advent2017/advent2019"
 )
 
 var _ = Describe("FuelCalc", func() {

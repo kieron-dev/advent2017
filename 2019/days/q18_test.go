@@ -4,13 +4,12 @@ import (
 	"io"
 	"os"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/manyworlds"
+	"github.com/kieron-dev/advent2017/advent2019/manyworlds"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Q18", func() {
-
 	var (
 		w         *manyworlds.World
 		input     io.Reader
@@ -49,5 +48,4 @@ var _ = Describe("Q18", func() {
 			Expect(w.MinStepsToCollectKeys()).To(Equal(1910))
 		})
 	})
-
 })

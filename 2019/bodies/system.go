@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/kieron-pivotal/advent2017/advent2019"
+	"github.com/kieron-dev/advent2017/advent2019"
 )
 
 type Coord3 struct {

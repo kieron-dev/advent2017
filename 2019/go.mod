@@ -1,6 +1,6 @@
-module github.com/kieron-pivotal/advent2017/advent2019
+module github.com/kieron-dev/advent2017/advent2019
 
-go 1.12
+go 1.14
 
 require (
 	github.com/mattn/go-runewidth v0.0.7 // indirect

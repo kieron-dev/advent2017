@@ -4,8 +4,8 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/grid"
-	"github.com/kieron-pivotal/advent2017/advent2019/robot"
+	"github.com/kieron-dev/advent2017/advent2019/grid"
+	"github.com/kieron-dev/advent2017/advent2019/robot"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

@@ -4,13 +4,12 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/fft"
+	"github.com/kieron-dev/advent2017/advent2019/fft"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Q16", func() {
-
 	var (
 		t     *fft.Transform
 		inStr string

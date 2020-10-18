@@ -3,7 +3,7 @@ package days_test
 import (
 	"os"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/grid"
+	"github.com/kieron-dev/advent2017/advent2019/grid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -34,5 +34,4 @@ var _ = Describe("Q10", func() {
 		res := g.LaserN(200, coord)
 		Expect(res).To(Equal(grid.NewCoord(19, 19)))
 	})
-
 })

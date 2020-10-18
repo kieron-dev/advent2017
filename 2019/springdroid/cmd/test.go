@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/springdroid"
+	"github.com/kieron-dev/advent2017/advent2019/springdroid"
 )
 
 func main() {

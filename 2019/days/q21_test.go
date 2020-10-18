@@ -6,14 +6,13 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/springdroid"
+	"github.com/kieron-dev/advent2017/advent2019/springdroid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
 )
 
 var _ = Describe("Q21", func() {
-
 	var (
 		s     *springdroid.Droid
 		out   *gbytes.Buffer

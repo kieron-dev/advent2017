@@ -4,14 +4,13 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/vacuumbot"
+	"github.com/kieron-dev/advent2017/advent2019/vacuumbot"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
 )
 
 var _ = Describe("Q17", func() {
-
 	var (
 		s    *vacuumbot.System
 		prog string
