@@ -3,7 +3,7 @@ package springdroid
 import (
 	"strings"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/intcode"
+	"github.com/kieron-dev/advent2017/advent2019/intcode"
 )
 
 type Droid struct {

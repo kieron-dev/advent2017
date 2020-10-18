@@ -4,14 +4,13 @@ import (
 	"io"
 	"strings"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/donut"
-	"github.com/kieron-pivotal/advent2017/advent2019/grid"
+	"github.com/kieron-dev/advent2017/advent2019/donut"
+	"github.com/kieron-dev/advent2017/advent2019/grid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Donut", func() {
-
 	var (
 		d      *donut.Maze
 		layout io.Reader

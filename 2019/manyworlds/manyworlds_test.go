@@ -4,13 +4,12 @@ import (
 	"io"
 	"strings"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/manyworlds"
+	"github.com/kieron-dev/advent2017/advent2019/manyworlds"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Manyworlds", func() {
-
 	var (
 		w    *manyworlds.World
 		maze io.Reader

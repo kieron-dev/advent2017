@@ -4,13 +4,12 @@ import (
 	"io"
 	"os"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/fuel"
+	"github.com/kieron-dev/advent2017/advent2019/fuel"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Q14", func() {
-
 	var (
 		equations io.Reader
 		calc      *fuel.Calculator

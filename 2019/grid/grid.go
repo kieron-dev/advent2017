@@ -4,7 +4,7 @@ import (
 	"io"
 	"sort"
 
-	"github.com/kieron-pivotal/advent2017/advent2019"
+	"github.com/kieron-dev/advent2017/advent2019"
 )
 
 type Grid struct {

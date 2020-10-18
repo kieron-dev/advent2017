@@ -4,13 +4,12 @@ import (
 	"io"
 	"strings"
 
-	"github.com/kieron-pivotal/advent2017/advent2019/bodies"
+	"github.com/kieron-dev/advent2017/advent2019/bodies"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Moons", func() {
-
 	var (
 		s            *bodies.System
 		initialState io.Reader
@@ -75,7 +74,6 @@ var _ = Describe("Moons", func() {
 		})
 
 		Context("getting back to the same state", func() {
-
 			BeforeEach(func() {
 				initialState = strings.NewReader(`<x=-8, y=-10, z=0>
 <x=5, y=5, z=10>
@@ -101,5 +99,4 @@ var _ = Describe("Moons", func() {
 			})
 		})
 	})
-
 })
