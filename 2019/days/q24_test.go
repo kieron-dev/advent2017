@@ -25,4 +25,12 @@ var _ = Describe("Q24", func() {
 	It("does part A", func() {
 		Expect(int(l.FirstRepeat())).To(Equal(18400817))
 	})
+
+	It("does part B", func() {
+		line := life.NewLine(string(input))
+		for i := 0; i < 200; i++ {
+			line = line.Evolve()
+		}
+		Expect(line.CountBugs()).To(Equal(1944))
+	})
 })
