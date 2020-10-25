@@ -7,7 +7,27 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Life", func() {
+var (
+	state1 = `....#
+#..#.
+#..##
+..#..
+#....`
+
+	state2 = `#..#.
+####.
+###.#
+##.##
+.##..`
+
+	state3 = `#####
+....#
+....#
+...#.
+#.###`
+)
+
+var _ = Describe("Single Chart Life", func() {
 	DescribeTable("string to life, and back again", func(input string, equivInt int) {
 		state := life.New(input)
 
@@ -21,24 +41,6 @@ var _ = Describe("Life", func() {
 		Entry("thirty-two", ".....\n#....\n.....\n.....\n.....", 32),
 		Entry("2^26 - 1", "#####\n#####\n#####\n#####\n#####", 1<<25-1),
 	)
-
-	state1 := `....#
-#..#.
-#..##
-..#..
-#....`
-
-	state2 := `#..#.
-####.
-###.#
-##.##
-.##..`
-
-	state3 := `#####
-....#
-....#
-...#.
-#.###`
 
 	DescribeTable("count neighbours", func(input string, r, c, count int) {
 		l := life.New(input)
@@ -65,5 +67,20 @@ var _ = Describe("Life", func() {
 		l := life.New(state1)
 		repeat := l.FirstRepeat()
 		Expect(int(repeat)).To(Equal(2129920))
+	})
+})
+
+var _ = Describe("infinitely stacked life", func() {
+	var line life.Line
+
+	BeforeEach(func() {
+		line = life.NewLine(state1)
+	})
+
+	It("creates new charts while evolving", func() {
+		for i := 0; i < 10; i++ {
+			line = line.Evolve()
+		}
+		Expect(line.CountBugs()).To(Equal(99))
 	})
 })
