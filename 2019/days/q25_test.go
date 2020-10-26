@@ -33,15 +33,12 @@ var _ = Describe("Q25", func() {
 		d.RunProgram()
 	})
 
-	FIt("can do part A", func() {
+	It("can do part A", func() {
 		go func() {
 			for {
 				b := d.Output()
 				if b < 256 {
 					fmt.Fprintf(outBuf, "%c", b)
-					// fmt.Printf("%c", b)
-					// } else {
-					// 	fmt.Printf("%d\n", b)
 				}
 			}
 		}()
@@ -65,15 +62,20 @@ var _ = Describe("Q25", func() {
 			"mouse", "space law space brochure",
 		}
 
+		myItems := items[:]
+
 	outer:
 		for i := 0; i <= 256; i++ {
-			for _, item := range items {
+			for _, item := range myItems {
 				enterCommand("drop " + item)
 			}
+
+			myItems = []string{}
 
 			for j := 0; j < 8; j++ {
 				if i&(1<<j) > 0 {
 					enterCommand("take " + items[j])
+					myItems = append(myItems, items[j])
 				}
 			}
 			enterCommand("west")
