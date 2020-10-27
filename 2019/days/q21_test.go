@@ -50,9 +50,10 @@ var _ = Describe("Q21", func() {
 	})
 
 	It("does part A", func() {
-		s.Input(`OR A J
+		s.Input(`
+NOT B J
 NOT C T
-AND T J
+OR T J
 AND D J
 NOT A T
 OR T J
@@ -63,17 +64,19 @@ WALK
 		Expect(n).To(Equal(19354437))
 	})
 
-	FIt("does part B", func() {
-		s.Input(`OR A J
+	It("does part B", func() {
+		s.Input(`
+NOT B J
 NOT C T
-AND T J
+OR T J
 AND D J
+AND H J
 NOT A T
 OR T J
 RUN
 `)
 		var n int
 		Eventually(resCh).Should(Receive(&n))
-		Expect(n).To(Equal(-1))
+		Expect(n).To(Equal(1145373084))
 	})
 })
