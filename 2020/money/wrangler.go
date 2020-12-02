@@ -11,6 +11,7 @@ import (
 
 type Wrangler struct {
 	items []int
+	hash  map[int]bool
 }
 
 func NewWrangler() Wrangler {
@@ -18,6 +19,8 @@ func NewWrangler() Wrangler {
 }
 
 func (w *Wrangler) LoadExpenses(data io.Reader) {
+	w.hash = map[int]bool{}
+
 	scanner := bufio.NewScanner(data)
 
 	for scanner.Scan() {
@@ -32,6 +35,7 @@ func (w *Wrangler) LoadExpenses(data io.Reader) {
 			log.Fatalf("conv-int: %v", err)
 		}
 		w.items = append(w.items, n)
+		w.hash[n] = true
 	}
 
 	sort.Ints(w.items)
@@ -39,16 +43,9 @@ func (w *Wrangler) LoadExpenses(data io.Reader) {
 
 func (w Wrangler) GetSummingTo(sum int) []int {
 	for i := 0; i < len(w.items)-1; i++ {
-		for j := i + 1; j < len(w.items); j++ {
-			s := w.items[i] + w.items[j]
-
-			if s > sum {
-				break
-			}
-
-			if s == sum {
-				return []int{w.items[i], w.items[j]}
-			}
+		desired := sum - w.items[i]
+		if w.hash[desired] {
+			return []int{w.items[i], desired}
 		}
 	}
 
@@ -64,16 +61,9 @@ func (w Wrangler) Get3SummingTo(sum int) []int {
 			if w.items[i]+w.items[j] > sum {
 				break
 			}
-			for k := j + 1; k < len(w.items); k++ {
-				s := w.items[i] + w.items[j] + w.items[k]
-
-				if s > sum {
-					break
-				}
-
-				if s == sum {
-					return []int{w.items[i], w.items[j], w.items[k]}
-				}
+			desired := sum - w.items[i] - w.items[j]
+			if w.hash[desired] {
+				return []int{w.items[i], w.items[j], desired}
 			}
 		}
 	}
