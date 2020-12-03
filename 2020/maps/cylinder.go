@@ -63,14 +63,13 @@ func (c *Cylinder) Load(data io.Reader) {
 	c.height = len(c.pattern)
 }
 
-func (c Cylinder) CountChars(pos Coord, dir Vector, char byte) int {
+func (c Cylinder) CountChars(start Coord, dir Vector, char byte) int {
 	n := 0
 
-	for pos.Y < c.height {
+	for pos := start; pos.Y < c.height; pos = pos.Plus(dir) {
 		if c.At(pos) == char {
 			n++
 		}
-		pos = pos.Plus(dir)
 	}
 
 	return n

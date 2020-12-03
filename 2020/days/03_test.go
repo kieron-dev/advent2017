@@ -28,7 +28,7 @@ var _ = Describe("03", func() {
 	})
 
 	It("does part A", func() {
-		Expect(grid.CountChars(maps.NewCoord(0, 0), maps.NewVector(3, 1), '#')).To(Equal(-1))
+		Expect(grid.CountChars(maps.NewCoord(0, 0), maps.NewVector(3, 1), '#')).To(Equal(176))
 	})
 
 	It("does part B", func() {
@@ -45,6 +45,6 @@ var _ = Describe("03", func() {
 			prod *= grid.CountChars(maps.NewCoord(0, 0), dir, '#')
 		}
 
-		Expect(prod).To(Equal(-1))
+		Expect(prod).To(Equal(5872458240))
 	})
 })
