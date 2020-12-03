@@ -1,0 +1,81 @@
+// Package maps does grids and stuff
+package maps
+
+import (
+	"bufio"
+	"io"
+	"log"
+	"strings"
+)
+
+type Cylinder struct {
+	width   int
+	height  int
+	pattern []string
+}
+
+type Tuple struct {
+	X, Y int
+}
+
+type (
+	Coord  Tuple
+	Vector Tuple
+)
+
+func NewCoord(x, y int) Coord {
+	return Coord{X: x, Y: y}
+}
+
+func (c Coord) Plus(v Vector) Coord {
+	return Coord{
+		X: c.X + v.X,
+		Y: c.Y + v.Y,
+	}
+}
+
+func NewVector(x, y int) Vector {
+	return Vector{X: x, Y: y}
+}
+
+func NewCylinder() Cylinder {
+	return Cylinder{}
+}
+
+func (c *Cylinder) Load(data io.Reader) {
+	scanner := bufio.NewScanner(data)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+
+		c.pattern = append(c.pattern, line)
+		lineLen := len(line)
+		if c.width != 0 && lineLen != c.width {
+			log.Fatalf("unexpected line length: %s, cylinder: %+v", line, c)
+		}
+		c.width = lineLen
+	}
+
+	c.height = len(c.pattern)
+}
+
+func (c Cylinder) CountChars(pos Coord, dir Vector, char byte) int {
+	n := 0
+
+	for pos.Y < c.height {
+		if c.At(pos) == char {
+			n++
+		}
+		pos = pos.Plus(dir)
+	}
+
+	return n
+}
+
+func (c Cylinder) At(coord Coord) byte {
+	return c.pattern[coord.Y][coord.X%c.width]
+}
