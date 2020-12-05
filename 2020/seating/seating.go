@@ -30,6 +30,8 @@ func (p *Plan) Load(data io.Reader) {
 
 		p.AddSeat(line)
 	}
+
+	sort.Ints(p.seats)
 }
 
 func (p *Plan) AddSeat(code string) {
@@ -47,14 +49,10 @@ func (p *Plan) AddSeat(code string) {
 }
 
 func (p Plan) MaxSeatID() int {
-	sort.Ints(p.seats)
-
 	return p.seats[len(p.seats)-1]
 }
 
 func (p Plan) MissingSeat() int {
-	sort.Ints(p.seats)
-
 	for i, s := range p.seats {
 		if p.seats[i+1] != s+1 {
 			return s + 1
