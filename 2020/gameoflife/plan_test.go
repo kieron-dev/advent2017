@@ -46,9 +46,10 @@ L.LLLLL.LL
 `))
 	})
 
-	It("can do a single iteration", func() {
-		plan.Evolve()
-		Expect(plan.State()).To(Equal(`#.##.##.##
+	Describe("part A", func() {
+		It("can do a single iteration", func() {
+			plan.Evolve(false)
+			Expect(plan.State()).To(Equal(`#.##.##.##
 #######.##
 #.#.#..#..
 ####.##.##
@@ -59,11 +60,11 @@ L.LLLLL.LL
 #.######.#
 #.#####.##
 `))
-	})
+		})
 
-	It("can iterate until stabilisation", func() {
-		plan.Stabilise()
-		Expect(plan.State()).To(Equal(`#.#L.L#.##
+		It("can iterate until stabilisation", func() {
+			plan.Stabilise(false)
+			Expect(plan.State()).To(Equal(`#.#L.L#.##
 #LLL#LL.L#
 L.#.L..#..
 #L##.##.L#
@@ -74,6 +75,56 @@ L.#.L..#..
 #.LLLLLL.L
 #.#L#L#.##
 `))
-		Expect(plan.OccupiedSeats()).To(Equal(37))
+			Expect(plan.OccupiedSeats()).To(Equal(37))
+		})
+	})
+
+	Describe("part B", func() {
+		It("can do a single iteration", func() {
+			plan.Evolve(true)
+			Expect(plan.State()).To(Equal(`#.##.##.##
+#######.##
+#.#.#..#..
+####.##.##
+#.##.##.##
+#.#####.##
+..#.#.....
+##########
+#.######.#
+#.#####.##
+`))
+		})
+
+		It("can do a two iterations", func() {
+			plan.Evolve(true)
+			plan.Evolve(true)
+			Expect(plan.State()).To(Equal(`#.LL.LL.L#
+#LLLLLL.LL
+L.L.L..L..
+LLLL.LL.LL
+L.LL.LL.LL
+L.LLLLL.LL
+..L.L.....
+LLLLLLLLL#
+#.LLLLLL.L
+#.LLLLL.L#
+`))
+		})
+
+		It("can iterate until stabilisation", func() {
+			plan.Stabilise(true)
+			Expect(plan.State()).To(Equal(`#.L#.L#.L#
+#LLLLLL.LL
+L.L.L..#..
+##L#.#L.L#
+L.L#.LL.L#
+#.LLLL#.LL
+..#.L.....
+LLL###LLL#
+#.LLLLL#.L
+#.L#LL#.L#
+`))
+			Expect(plan.OccupiedSeats()).To(Equal(26))
+		})
 	})
 })
