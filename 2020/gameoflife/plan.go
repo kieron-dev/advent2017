@@ -72,15 +72,55 @@ func (p SeatingPlan) OccupiedAround(coord maps.Coord) int {
 	return n
 }
 
+func (p SeatingPlan) VisiblyOccupiedAround(coord maps.Coord) int {
+	n := maps.NewVector(0, -1)
+	s := maps.NewVector(0, 1)
+	w := maps.NewVector(-1, 0)
+	e := maps.NewVector(1, 0)
+	nw := maps.NewVector(-1, -1)
+	ne := maps.NewVector(1, -1)
+	se := maps.NewVector(1, 1)
+	sw := maps.NewVector(-1, 1)
+
+	res := 0
+
+	for _, dir := range []maps.Vector{n, s, e, w, nw, ne, se, sw} {
+		for c := coord.Plus(dir); p.IsInPlan(c); c = c.Plus(dir) {
+			if p.state[c] == '.' {
+				continue
+			}
+			if p.state[c] == '#' {
+				res++
+			}
+			break
+		}
+	}
+
+	return res
+}
+
+func (p SeatingPlan) IsInPlan(c maps.Coord) bool {
+	return c.X >= 0 && c.X < p.cols && c.Y >= 0 && c.Y < p.rows
+}
+
 // Evolve returns true if a change has occurred
-func (p *SeatingPlan) Evolve() bool {
+func (p *SeatingPlan) Evolve(partB bool) bool {
 	newState := map[maps.Coord]byte{}
 	change := false
+	lim := 4
+	if partB {
+		lim = 5
+	}
 
 	for r := 0; r < p.rows; r++ {
 		for c := 0; c < p.cols; c++ {
 			coord := maps.NewCoord(c, r)
-			occupiedAround := p.OccupiedAround(coord)
+			var occupiedAround int
+			if partB {
+				occupiedAround = p.VisiblyOccupiedAround(coord)
+			} else {
+				occupiedAround = p.OccupiedAround(coord)
+			}
 
 			if p.state[coord] == 'L' && occupiedAround == 0 {
 				newState[coord] = '#'
@@ -88,7 +128,7 @@ func (p *SeatingPlan) Evolve() bool {
 				continue
 			}
 
-			if p.state[coord] == '#' && occupiedAround >= 4 {
+			if p.state[coord] == '#' && occupiedAround >= lim {
 				newState[coord] = 'L'
 				change = true
 				continue
@@ -103,8 +143,8 @@ func (p *SeatingPlan) Evolve() bool {
 	return change
 }
 
-func (p *SeatingPlan) Stabilise() {
-	for p.Evolve() {
+func (p *SeatingPlan) Stabilise(partB bool) {
+	for p.Evolve(partB) {
 	}
 }
 

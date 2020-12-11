@@ -28,7 +28,12 @@ var _ = Describe("11", func() {
 	})
 
 	It("part A", func() {
-		plan.Stabilise()
-		Expect(plan.OccupiedSeats()).To(Equal(-1))
+		plan.Stabilise(false)
+		Expect(plan.OccupiedSeats()).To(Equal(2310))
+	})
+
+	It("part B", func() {
+		plan.Stabilise(true)
+		Expect(plan.OccupiedSeats()).To(Equal(2074))
 	})
 })
