@@ -34,6 +34,34 @@ func (c Coord) Plus(v Vector) Coord {
 	}
 }
 
+func (v Vector) Plus(w Vector) Vector {
+	return Vector{
+		X: v.X + w.X,
+		Y: v.Y + w.Y,
+	}
+}
+
+func (v Vector) Times(n int) Vector {
+	return Vector{
+		X: v.X * n,
+		Y: v.Y * n,
+	}
+}
+
+func (v Vector) RotateLeft() Vector {
+	return Vector{
+		X: v.Y,
+		Y: -v.X,
+	}
+}
+
+func (v Vector) RotateRight() Vector {
+	return Vector{
+		X: -v.Y,
+		Y: v.X,
+	}
+}
+
 func (c Coord) Neighbours(rows, cols int) []Coord {
 	res := []Coord{}
 
