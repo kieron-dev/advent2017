@@ -146,7 +146,7 @@ func (m *Memory) setVarMem(addr, val int) {
 				addr &^= (1 << m.addrXPositions[j])
 			}
 		}
-		m.setMem(addr, val)
+		m.memory[addr] = val
 	}
 }
 
