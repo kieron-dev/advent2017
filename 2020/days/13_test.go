@@ -33,6 +33,6 @@ var _ = Describe("13", func() {
 	})
 
 	It("part B", func() {
-		Expect(finder.SpecialTimestamp()).To(Equal(-1))
+		Expect(finder.SpecialTimestamp()).To(Equal(867295486378319))
 	})
 })

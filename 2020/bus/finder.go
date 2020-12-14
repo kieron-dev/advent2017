@@ -2,7 +2,6 @@ package bus
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"log"
 	"math/big"
@@ -121,7 +120,6 @@ func (f Finder) SpecialTimestamp() int {
 		workMap[busProd] = newRemainder
 	}
 
-	fmt.Printf("workMap = %+v\n", workMap)
 	for _, v := range workMap {
 		return int(v.Int64())
 	}
