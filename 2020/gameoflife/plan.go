@@ -3,6 +3,7 @@ package gameoflife
 
 import (
 	"bufio"
+	"bytes"
 	"io"
 	"strings"
 
@@ -10,14 +11,14 @@ import (
 )
 
 type SeatingPlan struct {
-	state map[maps.Coord]byte
+	state [][]byte
 	rows  int
 	cols  int
 }
 
 func NewSeatingPlan() SeatingPlan {
 	return SeatingPlan{
-		state: map[maps.Coord]byte{},
+		state: [][]byte{},
 	}
 }
 
@@ -33,28 +34,20 @@ func (p *SeatingPlan) Load(data io.Reader) {
 
 		p.AddLine(line)
 	}
+
+	p.rows = len(p.state)
 }
 
 func (p *SeatingPlan) AddLine(line string) {
-	for col := 0; col < len(line); col++ {
-		coord := maps.NewCoord(col, p.rows)
-		p.state[coord] = line[col]
-	}
-
-	p.rows++
+	p.state = append(p.state, []byte(line))
 	p.cols = len(line)
 }
 
 func (p SeatingPlan) State() string {
 	res := ""
 
-	for r := 0; r < p.rows; r++ {
-		line := ""
-		for c := 0; c < p.cols; c++ {
-			coord := maps.NewCoord(c, r)
-			line += string(p.state[coord])
-		}
-		res += line + "\n"
+	for _, line := range p.state {
+		res += string(line) + "\n"
 	}
 
 	return res
@@ -63,35 +56,57 @@ func (p SeatingPlan) State() string {
 func (p SeatingPlan) OccupiedAround(coord maps.Coord) int {
 	n := 0
 
-	for _, c := range coord.Neighbours(p.rows, p.cols) {
-		if p.state[c] == '#' {
-			n++
+	for r := -1; r < 2; r++ {
+		for c := -1; c < 2; c++ {
+			if (r == 0 && c == 0) || coord.Y+r < 0 || coord.X+c < 0 || coord.Y+r >= p.rows || coord.X+c >= p.cols {
+				continue
+			}
+
+			if p.state[coord.Y+r][coord.X+c] == '#' {
+				n++
+			}
 		}
 	}
 
 	return n
 }
 
-func (p SeatingPlan) VisiblyOccupiedAround(coord maps.Coord) int {
-	n := maps.NewVector(0, -1)
-	s := maps.NewVector(0, 1)
-	w := maps.NewVector(-1, 0)
-	e := maps.NewVector(1, 0)
-	nw := maps.NewVector(-1, -1)
-	ne := maps.NewVector(1, -1)
-	se := maps.NewVector(1, 1)
-	sw := maps.NewVector(-1, 1)
+var (
+	n  = maps.NewVector(0, -1)
+	s  = maps.NewVector(0, 1)
+	w  = maps.NewVector(-1, 0)
+	e  = maps.NewVector(1, 0)
+	nw = maps.NewVector(-1, -1)
+	ne = maps.NewVector(1, -1)
+	se = maps.NewVector(1, 1)
+	sw = maps.NewVector(-1, 1)
 
+	all = []maps.Vector{n, s, e, w, nw, ne, se, sw}
+)
+
+func (p SeatingPlan) VisiblyOccupiedAround(coord maps.Coord) int {
 	res := 0
 
-	for _, dir := range []maps.Vector{n, s, e, w, nw, ne, se, sw} {
-		for c := coord.Plus(dir); p.IsInPlan(c); c = c.Plus(dir) {
-			if p.state[c] == '.' {
+	for _, dir := range all {
+		r := coord.Y
+		c := coord.X
+
+		for {
+			r += dir.Y
+			c += dir.X
+
+			if r < 0 || c < 0 || r >= p.rows || c >= p.cols {
+				break
+			}
+
+			if p.state[r][c] == '.' {
 				continue
 			}
-			if p.state[c] == '#' {
+			if p.state[r][c] == '#' {
 				res++
 			}
+
+			// if p.state[r][c] == 'L'
 			break
 		}
 	}
@@ -105,7 +120,7 @@ func (p SeatingPlan) IsInPlan(c maps.Coord) bool {
 
 // Evolve returns true if a change has occurred
 func (p *SeatingPlan) Evolve(partB bool) bool {
-	newState := map[maps.Coord]byte{}
+	newState := make([][]byte, p.rows)
 	change := false
 	lim := 4
 	if partB {
@@ -113,8 +128,10 @@ func (p *SeatingPlan) Evolve(partB bool) bool {
 	}
 
 	for r := 0; r < p.rows; r++ {
+		newState[r] = make([]byte, p.cols)
 		for c := 0; c < p.cols; c++ {
 			coord := maps.NewCoord(c, r)
+
 			var occupiedAround int
 			if partB {
 				occupiedAround = p.VisiblyOccupiedAround(coord)
@@ -122,19 +139,19 @@ func (p *SeatingPlan) Evolve(partB bool) bool {
 				occupiedAround = p.OccupiedAround(coord)
 			}
 
-			if p.state[coord] == 'L' && occupiedAround == 0 {
-				newState[coord] = '#'
+			if p.state[r][c] == 'L' && occupiedAround == 0 {
+				newState[r][c] = '#'
 				change = true
 				continue
 			}
 
-			if p.state[coord] == '#' && occupiedAround >= lim {
-				newState[coord] = 'L'
+			if p.state[r][c] == '#' && occupiedAround >= lim {
+				newState[r][c] = 'L'
 				change = true
 				continue
 			}
 
-			newState[coord] = p.state[coord]
+			newState[r][c] = p.state[r][c]
 		}
 	}
 
@@ -151,10 +168,8 @@ func (p *SeatingPlan) Stabilise(partB bool) {
 func (p SeatingPlan) OccupiedSeats() int {
 	n := 0
 
-	for _, s := range p.state {
-		if s == '#' {
-			n++
-		}
+	for _, line := range p.state {
+		n += bytes.Count(line, []byte("#"))
 	}
 
 	return n

@@ -62,32 +62,6 @@ func (v Vector) RotateRight() Vector {
 	}
 }
 
-func (c Coord) Neighbours(rows, cols int) []Coord {
-	res := []Coord{}
-
-	for i := -1; i < 2; i++ {
-		for j := -1; j < 2; j++ {
-			if i == 0 && j == 0 {
-				continue
-			}
-
-			row := c.Y + i
-			if row < 0 || row >= rows {
-				continue
-			}
-
-			col := c.X + j
-			if col < 0 || col >= cols {
-				continue
-			}
-
-			res = append(res, NewCoord(col, row))
-		}
-	}
-
-	return res
-}
-
 func NewVector(x, y int) Vector {
 	return Vector{X: x, Y: y}
 }
