@@ -1,3 +1,4 @@
+// Package memory simulates an elf memory game
 package memory
 
 import (
