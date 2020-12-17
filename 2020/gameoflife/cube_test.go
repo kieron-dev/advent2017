@@ -55,7 +55,7 @@ var _ = Describe("Cube", func() {
 			cube = gameoflife.NewCube(4)
 		})
 
-		FIt("has 112 active after 6 cycles", func() {
+		It("has 112 active after 6 cycles", func() {
 			for i := 0; i < 6; i++ {
 				cube.Evolve()
 			}
