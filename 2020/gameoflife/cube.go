@@ -3,7 +3,6 @@ package gameoflife
 import (
 	"bufio"
 	"io"
-	"strconv"
 	"strings"
 )
 
@@ -13,13 +12,13 @@ type Cube struct {
 	mins []int
 	maxs []int
 
-	cells map[string]bool
+	cells map[int]bool
 }
 
 func NewCube(dimension int) Cube {
 	return Cube{
 		dimension: dimension,
-		cells:     map[string]bool{},
+		cells:     map[int]bool{},
 		mins:      make([]int, dimension),
 		maxs:      make([]int, dimension),
 	}
@@ -52,14 +51,14 @@ func (c *Cube) Load(data io.Reader) {
 	}
 }
 
-func toKey(coord []int) string {
-	s := []string{}
+func toKey(coord []int) int {
+	n := 0
 
-	for _, n := range coord {
-		s = append(s, strconv.Itoa(n))
+	for _, i := range coord {
+		n += 100*n + i
 	}
 
-	return strings.Join(s, ",")
+	return n
 }
 
 func (c *Cube) Evolve() {
@@ -72,7 +71,7 @@ func (c *Cube) Evolve() {
 		prod *= sizes[i]
 	}
 
-	newState := map[string]bool{}
+	newState := map[int]bool{}
 	set := [][]int{}
 
 	for i := 0; i < prod; i++ {
