@@ -43,6 +43,6 @@ var _ = Describe("17", func() {
 			cube.Evolve()
 		}
 
-		Expect(cube.ActiveCount()).To(Equal(-1))
+		Expect(cube.ActiveCount()).To(Equal(2340))
 	})
 })
