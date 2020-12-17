@@ -18,9 +18,6 @@ var _ = Describe("17", func() {
 		var err error
 		data, err = os.Open("./input17")
 		Expect(err).NotTo(HaveOccurred())
-
-		cube = gameoflife.NewCube()
-		cube.Load(data)
 	})
 
 	AfterEach(func() {
@@ -28,10 +25,24 @@ var _ = Describe("17", func() {
 	})
 
 	It("does part A", func() {
+		cube = gameoflife.NewCube(3)
+		cube.Load(data)
+
 		for i := 0; i < 6; i++ {
 			cube.Evolve()
 		}
 
 		Expect(cube.ActiveCount()).To(Equal(255))
+	})
+
+	It("does part B", func() {
+		cube = gameoflife.NewCube(4)
+		cube.Load(data)
+
+		for i := 0; i < 6; i++ {
+			cube.Evolve()
+		}
+
+		Expect(cube.ActiveCount()).To(Equal(-1))
 	})
 })

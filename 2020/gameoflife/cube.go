@@ -3,28 +3,32 @@ package gameoflife
 import (
 	"bufio"
 	"io"
+	"strconv"
 	"strings"
 )
 
 type Cube struct {
-	minX, maxX int
-	minY, maxY int
-	minZ, maxZ int
+	dimension int
 
-	cells map[[3]int]bool
+	mins []int
+	maxs []int
+
+	cells map[string]bool
 }
 
-func NewCube() Cube {
+func NewCube(dimension int) Cube {
 	return Cube{
-		cells: map[[3]int]bool{},
+		dimension: dimension,
+		cells:     map[string]bool{},
+		mins:      make([]int, dimension),
+		maxs:      make([]int, dimension),
 	}
 }
 
 func (c *Cube) Load(data io.Reader) {
 	scanner := bufio.NewScanner(data)
 
-	z := 0
-	y := 0
+	coord := make([]int, c.dimension)
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -34,79 +38,108 @@ func (c *Cube) Load(data io.Reader) {
 			continue
 		}
 
-		c.maxX = len(line) - 1
-		c.maxY = y
+		c.maxs[c.dimension-1] = len(line) - 1
+		c.maxs[c.dimension-2] = coord[c.dimension-2]
 
 		for x := 0; x < len(line); x++ {
 			if line[x] == '#' {
-				c.cells[[3]int{x, y, z}] = true
+				coord[c.dimension-1] = x
+				c.cells[toKey(coord)] = true
 			}
 		}
 
-		y++
+		coord[c.dimension-2]++
 	}
 }
 
+func toKey(coord []int) string {
+	s := []string{}
+
+	for _, n := range coord {
+		s = append(s, strconv.Itoa(n))
+	}
+
+	return strings.Join(s, ",")
+}
+
 func (c *Cube) Evolve() {
-	newState := map[[3]int]bool{}
+	sizes := make([]int, c.dimension)
+	prod := 1
 
-	for x := c.minX - 1; x < c.maxX+2; x++ {
-		for y := c.minY - 1; y < c.maxY+2; y++ {
-			for z := c.minZ - 1; z < c.maxZ+2; z++ {
-				oldVal := c.cells[[3]int{x, y, z}]
-				neighbourCount := c.neighbours(x, y, z)
+	for i := 0; i < c.dimension; i++ {
+		// accomodate 1 each side of existing range
+		sizes[i] = c.maxs[i] - c.mins[i] + 3
+		prod *= sizes[i]
+	}
 
-				if oldVal && (neighbourCount == 2 || neighbourCount == 3) {
-					newState[[3]int{x, y, z}] = true
-					c.setMinMaxes(x, y, z)
-				}
+	newState := map[string]bool{}
+	set := [][]int{}
 
-				if !oldVal && neighbourCount == 3 {
-					newState[[3]int{x, y, z}] = true
-					c.setMinMaxes(x, y, z)
-				}
-			}
+	for i := 0; i < prod; i++ {
+		coord := make([]int, c.dimension)
+		work := i
+		for j := c.dimension - 1; j >= 0; j-- {
+			coord[j] = c.mins[j] - 1 + (work % sizes[j])
+			work /= sizes[j]
+		}
+
+		key := toKey(coord)
+		oldVal := c.cells[key]
+		neighbourCount := c.neighbours(coord)
+
+		if oldVal && (neighbourCount == 2 || neighbourCount == 3) {
+			newState[key] = true
+			set = append(set, coord[:])
+		}
+
+		if !oldVal && neighbourCount == 3 {
+			newState[key] = true
+			set = append(set, coord[:])
 		}
 	}
 
 	c.cells = newState
-}
-
-func (c *Cube) setMinMaxes(x, y, z int) {
-	if x < c.minX {
-		c.minX = x
-	}
-	if x > c.maxX {
-		c.maxX = x
-	}
-	if y < c.minY {
-		c.minY = y
-	}
-	if y > c.maxY {
-		c.maxY = y
-	}
-	if z < c.minZ {
-		c.minZ = z
-	}
-	if z > c.maxZ {
-		c.maxZ = z
+	for _, coord := range set {
+		c.setMinMaxes(coord)
 	}
 }
 
-func (c Cube) neighbours(x, y, z int) int {
+func (c *Cube) setMinMaxes(coord []int) {
+	for i, n := range coord {
+		if n < c.mins[i] {
+			c.mins[i] = n
+		}
+		if n > c.maxs[i] {
+			c.maxs[i] = n
+		}
+	}
+}
+
+func (c Cube) neighbours(around []int) int {
 	n := 0
+	aroundKey := toKey(around)
 
-	for i := -1; i < 2; i++ {
-		for j := -1; j < 2; j++ {
-			for k := -1; k < 2; k++ {
-				if i == 0 && j == 0 && k == 0 {
-					continue
-				}
+	max := 1
+	for i := 0; i < c.dimension; i++ {
+		max *= 3
+	}
 
-				if c.cells[[3]int{x + i, y + j, z + k}] {
-					n++
-				}
-			}
+	coord := make([]int, c.dimension)
+
+	for i := 0; i < max; i++ {
+		work := i
+		for j := 0; j < c.dimension; j++ {
+			coord[j] = around[j] - 1 + (work % 3)
+			work /= 3
+		}
+
+		key := toKey(coord)
+		if key == aroundKey {
+			continue
+		}
+
+		if c.cells[key] {
+			n++
 		}
 	}
 
