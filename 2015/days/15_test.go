@@ -62,7 +62,7 @@ var _ = Describe("15", func() {
 			for b := 0; a+b <= 100; b++ {
 				for c := 0; a+b+c <= 100; c++ {
 					d := 100 - a - b - c
-					s := scoreCookie(ingredients, a, b, c, d, false)
+					s := scoreCookie(ingredients, []int{a, b, c, d}, false)
 					if s > maxScore {
 						maxScore = s
 					}
@@ -93,7 +93,7 @@ var _ = Describe("15", func() {
 			for b := 0; a+b <= 100; b++ {
 				for c := 0; a+b+c <= 100; c++ {
 					d := 100 - a - b - c
-					s := scoreCookie(ingredients, a, b, c, d, true)
+					s := scoreCookie(ingredients, []int{a, b, c, d}, true)
 					if s > maxScore {
 						maxScore = s
 					}
@@ -105,32 +105,49 @@ var _ = Describe("15", func() {
 	})
 })
 
-func scoreCookie(ingredients []ingredient, a, b, c, d int, checkCalories bool) int {
+func scoreCookie(ingredients []ingredient, amounts []int, checkCalories bool) int {
 	if checkCalories {
-		calories := ingredients[0].calories*a + ingredients[1].calories*b + ingredients[2].calories*c + ingredients[3].calories*d
+		calories := sumProperty(ingredients, amounts, func(i ingredient) int {
+			return i.calories
+		})
 
 		if calories != 500 {
 			return -1
 		}
 	}
 
-	capacity := ingredients[0].capacity*a + ingredients[1].capacity*b + ingredients[2].capacity*c + ingredients[3].capacity*d
-	durability := ingredients[0].durability*a + ingredients[1].durability*b + ingredients[2].durability*c + ingredients[3].durability*d
-	flavor := ingredients[0].flavor*a + ingredients[1].flavor*b + ingredients[2].flavor*c + ingredients[3].flavor*d
-	texture := ingredients[0].texture*a + ingredients[1].texture*b + ingredients[2].texture*c + ingredients[3].texture*d
+	capacity := sumProperty(ingredients, amounts, func(i ingredient) int {
+		return i.capacity
+	})
 
-	if capacity < 0 {
-		capacity = 0
-	}
-	if durability < 0 {
-		durability = 0
-	}
-	if flavor < 0 {
-		flavor = 0
-	}
-	if texture < 0 {
-		texture = 0
-	}
+	durability := sumProperty(ingredients, amounts, func(i ingredient) int {
+		return i.durability
+	})
+
+	flavor := sumProperty(ingredients, amounts, func(i ingredient) int {
+		return i.flavor
+	})
+
+	texture := sumProperty(ingredients, amounts, func(i ingredient) int {
+		return i.texture
+	})
 
 	return capacity * durability * flavor * texture
+}
+
+func sumProperty(
+	ingredients []ingredient,
+	amounts []int,
+	getter func(ingred ingredient) int,
+) int {
+
+	property := 0
+	for i, ingredient := range ingredients {
+		property += getter(ingredient) * amounts[i]
+	}
+	if property < 0 {
+		property = 0
+	}
+
+	return property
 }
