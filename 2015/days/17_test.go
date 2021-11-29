@@ -54,6 +54,23 @@ var _ = Describe("17", func() {
 	})
 })
 
+func dpNumSolns(options []int, target int) int {
+	numSolns := map[int]int{0: 1}
+
+	for i := 0; i < len(options); i++ {
+		newSolns := map[int]int{}
+
+		for k, v := range numSolns {
+			newSolns[k] += v
+			newSolns[k+options[i]] += v
+		}
+
+		numSolns = newSolns
+	}
+
+	return numSolns[target]
+}
+
 func numSolns(options []int, target int, length int) int {
 	if len(options) == 0 || target < 0 {
 		return 0
