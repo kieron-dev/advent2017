@@ -80,7 +80,7 @@ var _ = Describe("18", func() {
 	)
 
 	It("can do part A", func() {
-		input, err := os.Open("input17")
+		input, err := os.Open("input18")
 		Expect(err).NotTo(HaveOccurred())
 		defer input.Close()
 
@@ -100,7 +100,7 @@ var _ = Describe("18", func() {
 	})
 
 	It("can do part B", func() {
-		input, err := os.Open("input17")
+		input, err := os.Open("input18")
 		Expect(err).NotTo(HaveOccurred())
 		defer input.Close()
 

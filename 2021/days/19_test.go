@@ -276,7 +276,7 @@ func transformZY(fn func(coord3d) coord3d) func(coord3d) coord3d {
 	}
 }
 
-var _ = FDescribe("19", func() {
+var _ = Describe("19", func() {
 	It("does part A", func() {
 		input, err := os.Open("input19")
 		Expect(err).NotTo(HaveOccurred())
