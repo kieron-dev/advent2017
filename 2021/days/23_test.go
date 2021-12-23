@@ -107,6 +107,7 @@ func (b *burrow) minCostSolution(stackDepth int, visited map[[23]byte]int, maxDe
 			b.hallway[hall] = b.rooms[roomIdx][depth]
 			b.rooms[roomIdx][depth] = 0
 			b.cost -= cost
+			continue
 		}
 		for room := 0; room < 4; room++ {
 			cost, depth := b.moveToHallway(room, hall)
