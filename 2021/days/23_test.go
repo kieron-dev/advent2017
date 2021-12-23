@@ -115,9 +115,12 @@ func (b *burrow) minCostSolution(stackDepth int, visited map[[23]byte]int, maxDe
 				b.cost += cost
 				b.hallway[hall] = b.rooms[room][depth]
 				b.rooms[room][depth] = 0
-				mcost := b.minCostSolution(stackDepth+1, visited, maxDepth)
-				if mcost < minCost {
-					minCost = mcost
+				key := b.Key()
+				if v, ok := visited[key]; !ok || v > b.cost {
+					mcost := b.minCostSolution(stackDepth+1, visited, maxDepth)
+					if mcost < minCost {
+						minCost = mcost
+					}
 				}
 				b.rooms[room][depth] = b.hallway[hall]
 				b.hallway[hall] = 0
