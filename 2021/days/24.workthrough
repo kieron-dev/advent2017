@@ -1,0 +1,52 @@
+1, 1, 9, 2, 3, 9, 8, 9, 4, 9, 9, 9, 6, 1
+
+-> 18:
+w: input1, x: 1, y: input1+9, z: input1+9
+
+-> 37:
+w: input2, x: 1, y: 0, z: 26*input1+input2+238
+
+-> 55:
+w: input3, x: , y: , z: 26^2*input1 + 26*input2 + input3 + 6190
+
+-> 73:
+w: input4, x:input3-7, y: , z: 26*input1 + input2 + 238
+
+-> 91:
+w: input5, x: input2-5, y: , z: input1 + 9
+
+-> 109:
+w: input6, x: input1+23 , y:, z: 26*input1 + input6 + 240
+
+-> 127:
+w: input7, x: input6+20, z: 26*26*input1 + 26*input6 + input7 + 6251
+
+-> 145:
+w: input8, x: input7+1 , z: 26*input1 + input6 + 240
+
+-> 163:
+w: input9, x: input6+21 , z: 26*26*input1 + 26*input6 + input9 + 6247
+
+-> 181:
+w: input10, x: input9+5, z: 26*input1 + input6 + 240
+
+
+-> 199:
+w: input11, x: input6+6, z: 26*26*input1 + 26*input6 + input11 + 6255
+
+-> 217:
+w: input12, x: input11, z: 26*input1 + input6 + 240
+
+-> 235:
+w: input13, x: input6-3, z: input1 + 9
+
+-> 252:
+w: input14, x: input1 + 6, z: 0
+
+// input3-7 == input4
+// input2-5 == input5
+// input7+1 == input8
+// input9+5 == input10
+// input11 == input12
+// input6-3 == input13
+// input1+6 == input14
