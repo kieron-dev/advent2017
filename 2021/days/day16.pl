@@ -1,0 +1,130 @@
+% thanks to Russ Cox - https://www.youtube.com/watch?v=1EpWx2pPhJI
+
+hex(`D2FE28`). % 2021
+hex(`C200B40A82`). % 1 + 2 = 3
+hex(`04005AC33890`). % 6 * 9 = 54
+hex(`38006F45291200`).
+hex(`EE00D40C823060`).
+hex(`8A004A801A8002F478`).
+hex(`620080001611562C8802118E34`).
+hex(`C0015000016115A2E0802F182340`).
+hex(`A0016C880162017C3686B18A3D4780`).
+hex(`2056FA18025A00A4F52AB13FAB6CDA779E1B2012DB003301006A35C7D882200C43289F07A5A192D200C1BC011969BA4A485E63D8FE4CC80480C00D500010F8991E23A8803104A3C425967260020E551DC01D98B5FEF33D5C044C0928053296CDAFCB8D4BDAA611F256DE7B945220080244BE59EE7D0A5D0E6545C0268A7126564732552F003194400B10031C00C002819C00B50034400A70039C009401A114009201500C00B00100D00354300254008200609000D39BB5868C01E9A649C5D9C4A8CC6016CC9B4229F3399629A0C3005E797A5040C016A00DD40010B8E508615000213112294749B8D67EC45F63A980233D8BCF1DC44FAC017914993D42C9000282CB9D4A776233B4BF361F2F9F6659CE5764EB9A3E9007ED3B7B6896C0159F9D1EE76B3FFEF4B8FCF3B88019316E51DA181802B400A8CFCC127E60935D7B10078C01F8B50B20E1803D1FA21C6F300661AC678946008C918E002A72A0F27D82DB802B239A63BAEEA9C6395D98A001A9234EA620026D1AE5CA60A900A4B335A4F815C01A800021B1AE2E4441006A0A47686AE01449CB5534929FF567B9587C6A214C6212ACBF53F9A8E7D3CFF0B136FD061401091719BC5330E5474000D887B24162013CC7EDDCDD8E5E77E53AF128B1276D0F980292DA0CD004A7798EEEC672A7A6008C953F8BD7F781ED00395317AF0726E3402100625F3D9CB18B546E2FC9C65D1C20020E4C36460392F7683004A77DB3DB00527B5A85E06F253442014A00010A8F9106108002190B61E4750004262BC7587E801674EB0CCF1025716A054AD47080467A00B864AD2D4B193E92B4B52C64F27BFB05200C165A38DDF8D5A009C9C2463030802879EB55AB8010396069C413005FC01098EDD0A63B742852402B74DF7FDFE8368037700043E2FC2C8CA00087C518990C0C015C00542726C13936392A4633D8F1802532E5801E84FDF34FCA1487D367EF9A7E50A43E90`).
+
+parse(S, P, BR):-
+    hex(H),
+    string_chars(S,H),
+    hexbits(H,B),
+    pkt(B, P, BR).
+
+hexdigit(H,D):- H =< 0'9, D is H - 0'0.
+hexdigit(H,D):- H >= 0'A, D is H - 0'A + 10.
+
+hexdigits([],[]).
+hexdigits([H|H1],[D|D1]):-
+    hexdigit(H,D),
+    hexdigits(H1,D1).
+
+hexbits([], []).
+hexbits([H|H1], [B3, B2, B1, B0 | BT]):-
+    hexdigit(H, D),
+    B3 is (D>>3) mod 2,
+    B2 is (D>>2) mod 2,
+    B1 is (D>>1) mod 2,
+    B0 is (D>>0) mod 2,
+    hexbits(H1, BT).
+
+take(N, B, V, BR):- take(N, B, 0, V, BR).
+
+take(0, B, A, A, B).
+take(N, [B|B1], A, V, BR):-
+    N > 0,
+    N1 is N-1,
+    A1 is A*2 + B,
+    take(N1, B1, A1, V, BR).
+
+header(B, V, T, BR):-
+    take(3, B, V, B1),
+    take(3, B1, T, BR).
+
+pkt(B, N, BR):-
+    header(B, _, 4, B1),
+    !,
+    number(B1, N, BR).
+
+pkt(B, P, BR):-
+    header(B, _, T, B1),
+    T =\= 4,
+    body(B1, V1, BR),
+    oper(T, V1, P).
+
+oper(0, P, S):- sum(P, S).
+oper(1, P, S):- prod(P, S).
+oper(2, P, S):- min(P, S).
+oper(3, P, S):- max(P, S).
+oper(5, [A, B], S):- greater(A, B, S).
+oper(6, [A, B], S):- less(A, B, S).
+oper(7, [A, B], S):- equal(A, B, S).
+
+greater(A, B, 1):- A > B, !.
+greater(_, _, 0).
+
+less(A, B, 1):- A < B, !.
+less(_, _, 0).
+
+equal(A, B, 1):- A == B, !.
+equal(_, _, 0).
+
+max([P|P1], S):- max(P1, S), P < S, !.
+max([P|_], P).
+
+min([P|P1], S):- min(P1, S), P > S, !.
+min([P|_], P).
+
+prod([], 1).
+prod([P|P1], S):-
+    prod(P1, S1),
+    S is P*S1.
+
+sum([], 0).
+sum([N|N1], S):-
+    sum(N1, S1),
+    S is N+S1.
+
+body([0|B], P, BR):-
+    take(15, B, N, B1),
+    split(B1, N, B2, BR),
+    allpkts(B2, P).
+
+body([1|B], P, BR):-
+    take(11, B, N, B1),
+    pkts(B1, N, P, BR).
+
+pkts(B, 0, [], B).
+pkts(B, N, [P|P1], BR):-
+    N > 0,
+    pkt(B, P, B1),
+    N1 is N-1,
+    pkts(B1, N1, P1, BR).
+
+split(B, 0, [], B).
+split([B|B1], N, [B|BL], BR):-
+    N > 0,
+    N1 is N-1,
+    split(B1, N1, BL, BR).
+
+allpkts([], []).
+allpkts(B, [P|P1]):-
+    pkt(B, P, B1),
+    allpkts(B1, P1).
+
+number(B, N, BR):- number(B, 0, N, BR).
+number([1|B], A, N, BR):-
+    take(4, B, V, B1),
+    A1 is 16*A+V,
+    number(B1, A1, N, BR).
+number([0|B], A, N, BR):-
+    take(4, B, V, BR),
+    N is A*16 + V.
+
+/* vim: set filetype=prolog : */
