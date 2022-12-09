@@ -134,7 +134,7 @@ var _ = Describe("Q15", func() {
 		})
 	})
 
-	FContext("part2", func() {
+	Context("part2", func() {
 		It("does something", func() {
 
 			in := strings.NewReader(`#######

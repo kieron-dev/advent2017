@@ -49,7 +49,7 @@ y=13, x=498..504
 		Expect(s.GetContainedRow(q17.NewCoord(500, 2))).To(Equal([]q17.Coord{}))
 	})
 
-	FIt("can fill solid bits", func() {
+	It("can fill solid bits", func() {
 		s := q17.NewSlice(ex01)
 		s.Flow(q17.NewCoord(500, 0))
 		s.Print()

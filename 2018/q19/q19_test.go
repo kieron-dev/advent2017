@@ -46,7 +46,7 @@ seti 9 0 5`)
 		}
 	})
 
-	FIt("runs part b a few times", func() {
+	It("runs part b a few times", func() {
 		f, err := os.Open("input")
 		Expect(err).NotTo(HaveOccurred())
 		c := q19.NewComputer(f)
