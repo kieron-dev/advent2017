@@ -80,7 +80,7 @@ var _ = Describe("08", func() {
 		Expect(visible).To(Equal(1803))
 	})
 
-	FIt("does part B", func() {
+	It("does part B", func() {
 		f, err := os.Open("input08")
 		Expect(err).NotTo(HaveOccurred())
 
