@@ -33,7 +33,7 @@ var _ = Describe("06", func() {
 			}
 		}
 
-		Expect(res).To(Equal(-2))
+		Expect(res).To(Equal(1175))
 	})
 
 	It("does part B", func() {
@@ -61,6 +61,6 @@ var _ = Describe("06", func() {
 			}
 		}
 
-		Expect(res).To(Equal(-2))
+		Expect(res).To(Equal(3217))
 	})
 })
