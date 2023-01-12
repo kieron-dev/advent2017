@@ -250,7 +250,7 @@ var _ = Describe("17", func() {
 		Expect(g.highestRow).To(Equal(3179))
 	})
 
-	FIt("does part B", func() {
+	It("does part B", func() {
 		bs, err := os.ReadFile("input17")
 		Expect(err).NotTo(HaveOccurred())
 		// bs := []byte(">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>")
