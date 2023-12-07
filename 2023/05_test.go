@@ -189,7 +189,7 @@ var _ = Describe("05", func() {
 			}
 		}
 
-		Expect(min).To(Equal(0))
+		Expect(min).To(Equal(214922730))
 	})
 
 	It("does part B", func() {
@@ -221,7 +221,7 @@ var _ = Describe("05", func() {
 			}
 		}
 
-		Expect(min).To(Equal(46))
+		Expect(min).To(Equal(148041808))
 	})
 })
 
