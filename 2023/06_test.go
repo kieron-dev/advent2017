@@ -84,6 +84,6 @@ var _ = Describe("06", func() {
 		minTime := getMinTime(t, d)
 		maxTime := getMaxTime(t, d)
 
-		Expect(maxTime - minTime + 1).To(Equal(71503))
+		Expect(maxTime - minTime + 1).To(Equal(43663323))
 	})
 })
