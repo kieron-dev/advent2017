@@ -17,6 +17,18 @@ func (c coord) add(d coord) coord {
 	return coord{c[0] + d[0], c[1] + d[1]}
 }
 
+func (c coord) dist(d coord) int {
+	return absDiff(c[0], d[0]) + absDiff(c[1], d[1])
+}
+
+func absDiff(a, b int) int {
+	d := a - b
+	if d < 0 {
+		d = -d
+	}
+	return d
+}
+
 type grid struct {
 	rows     []string
 	start    coord
