@@ -2,7 +2,7 @@ package two023_test
 
 import (
 	"bufio"
-	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -10,6 +10,8 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
+
+var memo map[string]int
 
 type arrangement struct {
 	pattern string
@@ -37,19 +39,6 @@ func (a *arrangement) unfold() {
 	a.missing = sum(a.groups) - strings.Count(a.pattern, "#")
 }
 
-func patternToGroups(pattern string) []int {
-	parts := strings.FieldsFunc(pattern, func(r rune) bool {
-		return r == '.'
-	})
-
-	lens := []int{}
-	for _, p := range parts {
-		lens = append(lens, len(p))
-	}
-
-	return lens
-}
-
 func loadArrangement(line string) arrangement {
 	parts := strings.Split(line, " ")
 	Expect(parts).To(HaveLen(2))
@@ -67,25 +56,111 @@ func loadArrangement(line string) arrangement {
 	return arr
 }
 
-func (a arrangement) possibilities() int {
-	if len(a.holes) == 0 || a.missing == 0 {
-		return 1
+func (a arrangement) chomp() (arrangement, error) {
+	firstQ := strings.Index(a.pattern, "?")
+	pattern := a.pattern
+
+	if firstQ > -1 {
+		precedingDot := strings.LastIndex(pattern[:firstQ], ".")
+		if precedingDot == -1 {
+			return a, nil
+		}
+		pattern = pattern[:precedingDot+1]
 	}
 
-	posses := 0
+	groups := calcGroups(pattern)
+	if sliceHasPrefix(a.groups, groups) {
+		return arrangement{pattern: a.pattern[len(pattern):], groups: a.groups[len(groups):]}, nil
+	}
 
-	for i := 0; i < choose(len(a.holes), a.missing); i++ {
-		choice := combination(len(a.holes), a.missing, i)
-		s1 := bytes.ReplaceAll([]byte(a.pattern), []byte("?"), []byte("."))
-		for _, n := range choice {
-			s1[a.holes[n-1]] = '#'
-			if sliceEqual(a.groups, patternToGroups(string(s1))) {
-				posses++
-			}
+	return arrangement{}, errors.New("group mismatch")
+}
+
+func (a arrangement) toKey() string {
+	return fmt.Sprintf("%s:%v", a.pattern, a.groups)
+}
+
+func (a arrangement) possibilities() int {
+	key := a.toKey()
+	if v, ok := memo[key]; ok {
+		return v
+	}
+
+	var err error
+	a, err = a.chomp()
+	if err != nil {
+		memo[key] = 0
+		return 0
+	}
+
+	if len(a.groups) == 0 {
+		if strings.Count(a.pattern, "#") == 0 {
+			memo[key] = 1
+			return 1
+		} else {
+			memo[key] = 0
+			return 0
 		}
 	}
 
-	return posses
+	if groupsToMinLen(a.groups) > len(a.pattern) {
+		memo[key] = 0
+		return 0
+	}
+
+	a.holes = nil
+	for i := range a.pattern {
+		if a.pattern[i] == '?' {
+			a.holes = append(a.holes, i)
+		}
+	}
+	a.missing = sum(a.groups) - strings.Count(a.pattern, "#")
+
+	holes := len(a.holes)
+
+	if holes < a.missing {
+		return 0
+	}
+
+	firstHole := a.holes[0]
+	a.pattern = a.pattern[:firstHole] + "#" + a.pattern[firstHole+1:]
+
+	count := a.possibilities()
+	a.pattern = a.pattern[:firstHole] + "." + a.pattern[firstHole+1:]
+
+	count += a.possibilities()
+
+	memo[key] = count
+	return count
+}
+
+func groupsToMinLen(groups []int) int {
+	return sum(groups) + len(groups) - 1
+}
+
+func calcGroups(s string) []int {
+	var a []int
+	for _, f := range strings.FieldsFunc(s, func(r rune) bool {
+		return r == '.'
+	}) {
+		a = append(a, len(f))
+	}
+
+	return a
+}
+
+func sliceHasPrefix(s, p []int) bool {
+	if len(p) > len(s) {
+		return false
+	}
+
+	for i := range p {
+		if s[i] != p[i] {
+			return false
+		}
+	}
+
+	return true
 }
 
 func sliceEqual(a, b []int) bool {
@@ -99,47 +174,6 @@ func sliceEqual(a, b []int) bool {
 		}
 	}
 	return true
-}
-
-// pick p from set of size n: iteration x
-func combination(n, p, x int) []int {
-	x++
-	if p == 1 {
-		return []int{x}
-	}
-
-	res := make([]int, p)
-	var r, k int
-
-	for i := 0; i < p-1; i++ {
-		if i != 0 {
-			res[i] = res[i-1]
-		}
-		for {
-			res[i]++
-			r = choose(n-res[i], p-(i+1))
-			k += r
-			if k >= x {
-				break
-			}
-		}
-		k -= r
-	}
-	res[p-1] = res[p-2] + x - k
-
-	return res
-}
-
-// n C k
-func choose(n, k int) int {
-	return fact(n) / fact(k) / fact(n-k)
-}
-
-func fact(n int) int {
-	if n == 0 {
-		return 1
-	}
-	return n * fact(n-1)
 }
 
 func sum(a []int) int {
@@ -172,7 +206,38 @@ func loadArrangements(filename string) []arrangement {
 }
 
 var _ = Describe("12", func() {
-	FIt("does part A", func() {
+	BeforeEach(func() {
+		memo = map[string]int{}
+	})
+
+	DescribeTable("chomp", func(pattern string, groups []int, resPattern string, resGroups []int, shouldFail bool) {
+		a := arrangement{
+			pattern: pattern,
+			groups:  groups,
+		}
+
+		var err error
+		a, err = a.chomp()
+		if shouldFail {
+			Expect(err).To(HaveOccurred())
+			return
+		}
+
+		Expect(err).NotTo(HaveOccurred())
+		Expect(a.pattern).To(Equal(resPattern))
+		Expect(a.groups).To(Equal(resGroups))
+	},
+		Entry("#", "#", []int{1}, "", []int{}, false),
+		Entry("#.?", "#.?", []int{1}, "?", []int{}, false),
+		Entry("#.#.?", "#.#.?", []int{1}, "", []int{}, true),
+		Entry("#.##.?", "#.##.?", []int{1, 2, 3}, "?", []int{3}, false),
+		Entry("#.##.?", "#.##.?", []int{1, 3, 3}, "", []int{}, true),
+		Entry("?", "?", []int{1}, "?", []int{1}, false),
+		Entry("..#??..#??.?.", "..#??..#??.?.", []int{3, 1, 1, 1}, "#??..#??.?.", []int{3, 1, 1, 1}, false),
+		Entry("#.?", "#.?", []int{2}, "?", []int{}, true),
+	)
+
+	It("does part A", func() {
 		var a int
 		for _, arr := range loadArrangements("input12") {
 			a += arr.possibilities()
@@ -181,16 +246,14 @@ var _ = Describe("12", func() {
 		Expect(a).To(Equal(8270))
 	})
 
-	XIt("does part B", func() {
+	It("does part B", func() {
 		var a int
-		for _, arr := range loadArrangements("input12a") {
+		for _, arr := range loadArrangements("input12") {
 			arr.unfold()
 			poss := arr.possibilities()
 			a += poss
-			fmt.Printf("arr = %+v\n", arr)
-			fmt.Printf("poss = %+v\n", poss)
 		}
 
-		Expect(a).To(Equal(8270))
+		Expect(a).To(Equal(204640299929836))
 	})
 })
