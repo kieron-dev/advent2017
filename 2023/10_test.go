@@ -17,6 +17,10 @@ func (c coord) add(d coord) coord {
 	return coord{c[0] + d[0], c[1] + d[1]}
 }
 
+func (c coord) mult(n int) coord {
+	return coord{c[0] * n, c[1] * n}
+}
+
 func (c coord) dist(d coord) int {
 	return absDiff(c[0], d[0]) + absDiff(c[1], d[1])
 }
