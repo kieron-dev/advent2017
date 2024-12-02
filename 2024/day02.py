@@ -1,16 +1,15 @@
 from functools import reduce
+from itertools import pairwise
 
 
 def safe(report):
     if report != sorted(report) and report != sorted(report, reverse=True):
         return False
 
-    last = report[0]
-    for n in report[1:]:
-        diff = abs(n - last)
+    for (a, b) in pairwise(report):
+        diff = abs(a - b)
         if diff < 1 or diff > 3:
             return False
-        last = n
 
     return True
 
