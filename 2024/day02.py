@@ -3,10 +3,13 @@ from itertools import pairwise
 
 
 def safe(report):
-    if report != sorted(report) and report != sorted(report, reverse=True):
-        return False
-
+    orders = set()
     for (a, b) in pairwise(report):
+        if a == b:
+            return False
+        orders.add(a < b)
+        if len(orders) > 1:
+            return False
         diff = abs(a - b)
         if diff < 1 or diff > 3:
             return False
