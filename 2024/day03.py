@@ -5,13 +5,13 @@ import re
 with open("input03") as f:
     instructions = f.read()
 
-sumA = 0
+sum_a = 0
 muls = re.findall(r"mul\((\d+),(\d+)\)", instructions)
-sumA += reduce(lambda x, y: x + int(y[0]) * int(y[1]), muls, 0)
-assert sumA == 175615763
-print(f"part a: {sumA}")
+sum_a += reduce(lambda x, y: x + int(y[0]) * int(y[1]), muls, 0)
+assert sum_a == 175615763
+print(f"part a: {sum_a}")
 
-sumB = 0
+sum_b = 0
 active = True
 for i, _ in enumerate(instructions):
     if instructions[i:].startswith("do()"):
@@ -22,7 +22,7 @@ for i, _ in enumerate(instructions):
         continue
     match = re.match(r"^mul\((\d+),(\d+)\)", instructions[i:])
     if match:
-        sumB += int(match.group(1)) * int(match.group(2))
+        sum_b += int(match.group(1)) * int(match.group(2))
 
-print(f"part b: {sumB}")
-assert sumB == 74361272
+assert sum_b == 74361272
+print(f"part b: {sum_b}")
