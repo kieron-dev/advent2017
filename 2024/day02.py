@@ -2,7 +2,7 @@ from functools import reduce
 from itertools import pairwise
 
 
-def safe(report):
+def safe(report: list[int]) -> bool:
     orders = set()
     for (a, b) in pairwise(report):
         if a == b:
@@ -17,7 +17,7 @@ def safe(report):
     return True
 
 
-def dampenedSafe(report):
+def dampenedSafe(report: list[int]) -> bool:
     if safe(report):
         return True
 
