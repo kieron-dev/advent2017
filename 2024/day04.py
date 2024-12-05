@@ -1,10 +1,11 @@
 from collections import defaultdict
+from typing import Iterable
 
 
 with open("input04") as f:
     lines = f.readlines()
 
-def count_xmas(chars):
+def count_xmas(chars: Iterable[str]):
     s = "".join(chars)
     return s.count("XMAS") + s.count("SAMX")
 

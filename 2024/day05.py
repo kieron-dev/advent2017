@@ -17,8 +17,8 @@ with open("input05") as f:
 
         updates.append(line.split(","))
 
-sum_a = 0
-bad_updates = []
+sum_a: int = 0
+bad_updates: list[str] = []
 for update in updates:
     seen = set()
     res = []
@@ -39,7 +39,7 @@ for update in updates:
 assert sum_a == 5639
 print(sum_a)
 
-def cmp(l, r):
+def cmp(l: str, r: str):
     if l in rules[r]:
         return 1
     if r in rules[l]:
