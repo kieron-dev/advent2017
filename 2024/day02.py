@@ -29,7 +29,7 @@ def dampenedSafe(report):
 
 
 with open("input02") as f:
-    reports = [[int(s) for s in l.split()] for l in f.readlines()]
+    reports = [[int(s) for s in l.split()] for l in f]
 
 sumA = reduce(lambda sum, report: sum + (1 if safe(report) else 0), reports, 0)
 print(f"part a: {sumA}")
