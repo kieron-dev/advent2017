@@ -1,4 +1,5 @@
 from collections import deque
+from typing import DefaultDict
 
 
 with open("input12") as f:
@@ -53,6 +54,34 @@ def perimeter(plot):
             sum += 1
     return sum
 
+def perimeter_2(plot):
+    edges = DefaultDict(set)
+    for r, c in plot:
+        if r == 0:
+            edges[(r, c)].add('n')
+        if r == row_count - 1:
+            edges[(r, c)].add('s')
+        if c == 0:
+            edges[(r, c)].add('w')
+        if c == col_count - 1:
+            edges[(r, c)].add('e')
+        if r > 0 and grid[r-1][c] != grid[r][c]:
+            edges[(r, c)].add('n')
+        if r < row_count-1 and grid[r+1][c] != grid[r][c]:
+            edges[(r, c)].add('s')
+        if c > 0 and grid[r][c-1] != grid[r][c]:
+            edges[(r, c)].add('w')
+        if c < col_count-1 and grid[r][c+1] != grid[r][c]:
+            edges[(r, c)].add('e')
+
+    for r, c in plot:
+        if len(edges[(r,c)]) > 1:
+            break
+
+    print((r, c))
+
+
+
 for r, row in enumerate(grid):
     for c, _ in enumerate(row):
         if (r, c) in seen:
@@ -65,3 +94,7 @@ for p in plots:
     sum_a += area(p) * perimeter(p)
 
 print(sum_a)
+
+
+for p in plots:
+    perimeter_2(p)
