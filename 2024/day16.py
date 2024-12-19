@@ -13,10 +13,10 @@ class CellDetails:
 class Maze:
     directions = {"e": (0, 1), "w": (0, -1), "s": (1, 0), "n": (-1, 0)}
     turns = {
-        "e": {"w": 2000, "s": 1000, "n": 1000},
-        "w": {"e": 2000, "s": 1000, "n": 1000},
-        "n": {"s": 2000, "e": 1000, "w": 1000},
-        "s": {"n": 2000, "e": 1000, "w": 1000},
+        "e": {"s": 1000, "n": 1000},
+        "w": {"s": 1000, "n": 1000},
+        "n": {"e": 1000, "w": 1000},
+        "s": {"e": 1000, "w": 1000},
     }
 
     def __init__(self, filename) -> None:
@@ -121,4 +121,4 @@ if __name__ == "__main__":
 
     seats = maze.get_seats()
     assert seats == 583
-    maze.print_grid()
+    # maze.print_grid()
