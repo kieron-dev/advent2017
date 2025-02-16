@@ -103,7 +103,6 @@ class CursorKeypad(Keypad):
                 p[0] -= 1
                 option_1.append("^")
             option_1.append("A")
-            # return [option_1]
             res.append(option_1)
 
         p = list(self.pos)
@@ -122,7 +121,6 @@ class CursorKeypad(Keypad):
                 p[1] += 1
                 option_2.append(">")
             option_2.append("A")
-            # return [option_2]
             res.append(option_2)
 
         return res

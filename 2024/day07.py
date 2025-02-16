@@ -4,23 +4,35 @@ import math
 with open("input07") as f:
     tests = [[int(n) for n in l.strip().replace(":", "").split()] for l in f]
 
+
+def dfs(l):
+    if len(l) == 1:
+        yield l[0]
+        return
+    for n in dfs(l[1:]):
+        yield l[0] + n
+        yield l[0] * n
+
+def dfs_b(l):
+    if len(l) == 1:
+        yield l[0]
+        return
+    for n in dfs_b(l[1:]):
+        yield l[0] + n
+        yield l[0] * n
+        c = l[0]
+        c *= 10 ** int(math.log(n, 10) + 1)
+        c += n
+        yield c
+
 sum_a = 0
 for t in tests:
     target = t[0]
     elements = t[1:]
 
-    for p in range(1 << (len(elements)-1)):
-        s = elements[0]
-        for i, e in enumerate(elements[1:]):
-            if p & 1<<i:
-                s += e
-            else:
-                s *= e
-            if s > target:
-                break
-        if s == target:
-            sum_a += target
-            break
+    elements.reverse()
+    if target in dfs(elements):
+        sum_a += target
 
 print(sum_a)
 assert sum_a == 850435817339
@@ -30,24 +42,9 @@ for t in tests:
     target = t[0]
     elements = t[1:]
 
-    for p in range(3**(len(elements)-1)):
-        s = elements[0]
-        b3 = p
-        for i, e in enumerate(elements[1:]):
-            match b3 % 3:
-                case 0:
-                    s += e
-                case 1:
-                    s *= e
-                case 2:
-                    s *= 10**int(math.log(e, 10)+1)
-                    s += e
-            if s > target:
-                break
-            b3 //= 3
-        if s == target:
-            sum_b += target
-            break
+    elements.reverse()
+    if target in dfs_b(elements):
+        sum_b += target
 
 print(sum_b)
 assert sum_b == 104824810233437

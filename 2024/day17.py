@@ -123,7 +123,7 @@ class Computer:
         l = len(self.program)
 
         for i in range(8):
-            n = (found_a<<3)+i
+            n = (found_a<<3)|i
             self.reset()
             self.a = n
             res = self.run()

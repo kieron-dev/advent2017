@@ -81,8 +81,5 @@ class Test24(unittest.TestCase):
         print(",".join(sorted(swaps)))
 
 
-
-
-
 if __name__ == "__main__":
     unittest.main()

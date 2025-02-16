@@ -74,11 +74,34 @@ def perimeter_2(plot):
         if c < col_count-1 and grid[r][c+1] != grid[r][c]:
             edges[(r, c)].add('e')
 
-    for r, c in plot:
-        if len(edges[(r,c)]) > 1:
-            break
+    discarded = set()
+    perim = 0
+    for coord, sides in edges.copy().items():
+        for s in sides:
+            r, c = coord
+            if (r, c, s) in discarded:
+                continue
+            perim += 1
+            add = 0
+            if s in ('n', 's'):
+                add = 2
+            next_r, next_c = r, c
+            while True:
+                next_r, next_c = next_r + directions[add][0], next_c + directions[add][1]
+                if s in edges[(next_r, next_c)]:
+                    discarded.add((next_r, next_c, s))
+                else:
+                    break
 
-    print((r, c))
+            next_r, next_c = r, c
+            while True:
+                next_r, next_c = next_r + directions[add+1][0], next_c + directions[add+1][1]
+                if s in edges[(next_r, next_c)]:
+                    discarded.add((next_r, next_c, s))
+                else:
+                    break
+
+    return perim
 
 
 
@@ -90,11 +113,13 @@ for r, row in enumerate(grid):
 
 sum_a = 0
 for p in plots:
-    print(area(p), perimeter(p))
     sum_a += area(p) * perimeter(p)
 
 print(sum_a)
 
 
+sum_b = 0
 for p in plots:
-    perimeter_2(p)
+    sum_b += area(p) * perimeter_2(p)
+
+print(sum_b)
