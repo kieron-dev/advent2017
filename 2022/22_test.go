@@ -117,21 +117,6 @@ func (m maze22) getPassword() int {
 	return 1000*r + 4*c + d
 }
 
-/*
-        ...#
-        .#..
-        #...
-        ....
-...#.......#
-........#...
-..#....#....
-..........#.
-        ...#....
-        .....#..
-        .#......
-        ......#.
-*/
-
 var _ = Describe("22", func() {
 	example := `        ...#
         .#..
@@ -157,7 +142,7 @@ var _ = Describe("22", func() {
 		Expect(m.instructions).To(Equal("10R5L5R10L4R5L5"))
 	})
 
-	FIt("can follow instructions", func() {
+	It("can follow instructions", func() {
 		m := newMaze(strings.NewReader(example))
 		r, c, d := m.followInstructions()
 
@@ -177,12 +162,21 @@ var _ = Describe("22", func() {
 		Expect(d).To(Equal(3))
 	})
 
-	FIt("can do part A", func() {
+	It("can do part A", func() {
 		f, err := os.Open("input22")
 		Expect(err).NotTo(HaveOccurred())
 		m := newMaze(f)
 		f.Close()
 
 		Expect(m.getPassword()).To(Equal(60362))
+	})
+
+	It("does part B", func() {
+		/* shape
+		.AB
+		.C
+		.D
+		EF
+		*/
 	})
 })
