@@ -3,19 +3,21 @@ module github.com/kieron-dev/advent2017/advent2019
 go 1.25.6
 
 require (
-	github.com/nsf/termbox-go v0.0.0-20190817171036-93860e161317
-	github.com/onsi/ginkgo v1.14.2
-	github.com/onsi/gomega v1.10.3
+	github.com/nsf/termbox-go v1.1.1
+	github.com/onsi/ginkgo v1.16.5
+	github.com/onsi/gomega v1.39.1
 )
 
 require (
-	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/mattn/go-runewidth v0.0.7 // indirect
-	github.com/nxadm/tail v1.4.5 // indirect
-	golang.org/x/net v0.0.0-20201016165138-7b1cca2348c0 // indirect
-	golang.org/x/sys v0.0.0-20201018230417-eeed37f84f13 // indirect
-	golang.org/x/text v0.3.3 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
+	github.com/clipperhouse/stringish v0.1.1 // indirect
+	github.com/clipperhouse/uax29/v2 v2.4.0 // indirect
+	github.com/fsnotify/fsnotify v1.9.0 // indirect
+	github.com/google/go-cmp v0.7.0 // indirect
+	github.com/mattn/go-runewidth v0.0.19 // indirect
+	github.com/nxadm/tail v1.4.11 // indirect
+	go.yaml.in/yaml/v3 v3.0.4 // indirect
+	golang.org/x/net v0.49.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
+	golang.org/x/text v0.33.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
