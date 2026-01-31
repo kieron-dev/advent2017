@@ -1,6 +1,6 @@
 module github.com/kieron-dev/adventofcode/2021
 
-go 1.17
+go 1.25.6
 
 require (
 	github.com/onsi/ginkgo/v2 v2.0.0-rc2

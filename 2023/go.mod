@@ -1,6 +1,6 @@
 module advent-2023
 
-go 1.21
+go 1.25.6
 
 require (
 	github.com/onsi/ginkgo/v2 v2.15.0
