@@ -7,6 +7,9 @@ import (
 	"slices"
 )
 
+// Use small or -small when comparing values with zero
+const small = 1e-8
+
 type LinearProgram struct {
 	// N
 	NonBasicIndices []int
@@ -62,10 +65,13 @@ func NewLinearProgram(constraints [][]float64, ineqValues []float64, objectiveCo
 }
 
 func InitializeSimplex(constraints [][]float64, ineqValues []float64, objectiveCoeffs []float64) (*LinearProgram, error) {
+	if len(constraints) != len(ineqValues) {
+		panic("on the streets of london")
+	}
 	l := NewLinearProgram(constraints, ineqValues, objectiveCoeffs)
 
 	minIneqVal := l.IneqValues[0]
-	minIneqIdx := -1
+	minIneqIdx := 0
 	for i, b := range l.IneqValues {
 		if b < minIneqVal {
 			minIneqVal = b
@@ -73,16 +79,15 @@ func InitializeSimplex(constraints [][]float64, ineqValues []float64, objectiveC
 		}
 	}
 
-	if minIneqVal >= 0 {
+	if minIneqVal >= -small {
 		// initial basic solution is feasible
 		return l, nil
 	}
 
 	lAux := l.constructAuxiliaryProgram()
 
-	leavingIndex := minIneqIdx
 	// we've inserted 0 at the front, so add 1 to leaving index
-	lAux.Pivot(leavingIndex+1, 0)
+	lAux.Pivot(minIneqIdx+1, 0)
 
 	err := lAux.optimise()
 	if err != nil {
@@ -97,11 +102,11 @@ func InitializeSimplex(constraints [][]float64, ineqValues []float64, objectiveC
 		return nil, errors.New("infeasible")
 	}
 
-	// ensure x_0 non-basic, then remove it
+	// ensure x_0 non-basic. If basic, perform degenerate pivot to make it non-basic
 	if slices.Contains(lAux.BasicIndices, 0) {
 		enteringIndex := -1
 		for i, v := range lAux.ObjectiveCoeffs {
-			if v < 0 {
+			if v < -small {
 				enteringIndex = i
 				break
 			}
@@ -208,7 +213,7 @@ func (lp *LinearProgram) optimise() error {
 	for {
 		e := -1
 		for i, c := range lp.ObjectiveCoeffs {
-			if c > 0 {
+			if c > small {
 				e = i
 				break
 			}
@@ -220,7 +225,7 @@ func (lp *LinearProgram) optimise() error {
 		l := -1
 		minVal := 1e100
 		for _, i := range lp.BasicIndices {
-			if lp.Constraints[i][e] > 0 {
+			if lp.Constraints[i][e] > small {
 				work := lp.IneqValues[i] / lp.Constraints[i][e]
 				if work < minVal {
 					minVal = work

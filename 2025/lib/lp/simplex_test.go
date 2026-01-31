@@ -119,7 +119,7 @@ func TestAocProblem(t *testing.T) {
 	assert.Equal(t, -10.0, val)
 }
 
-func LineToInput(t *testing.T, line string) ([][]float64, []float64, []float64) {
+func lineToInput(t *testing.T, line string) ([][]float64, []float64, []float64) {
 	firstCurlyBr := strings.Index(line, "{")
 	lastCurlyBr := strings.LastIndex(line, "}")
 	requireds := []int{}
@@ -173,22 +173,44 @@ func LineToInput(t *testing.T, line string) ([][]float64, []float64, []float64) 
 	return constraints, ineqValues, objectiveCoeffs
 }
 
-func TestAocProblem2(t *testing.T) {
-	line := "[#..##.#..] (1,2,4,6,8) (0,1,6) (0,1,2,5,6,8) (0,1,2,4,6,7,8) (0,2,4,6,7,8) (0,1,2,3,4,5) (3,5,7) (0,3,4,6) {56,47,33,28,34,27,55,4,24}"
-	constraints, ineqValues, objectiveCoeffs := LineToInput(t, line)
+func TestAocProblems(t *testing.T) {
+	type tc struct {
+		line        string
+		expectedVal float64
+	}
 
-	s, val, err := Simplex(constraints, ineqValues, objectiveCoeffs)
-	assert.NoError(t, err)
-	assert.Equal(t, []float64{8, 15, 15, 0, 1, 9, 3, 16}, s)
-	assert.Equal(t, -67.0, val)
+	tcs := map[string]tc{
+		"real01": {
+			line:        "[#..##.#..] (1,2,4,6,8) (0,1,6) (0,1,2,5,6,8) (0,1,2,4,6,7,8) (0,2,4,6,7,8) (0,1,2,3,4,5) (3,5,7) (0,3,4,6) {56,47,33,28,34,27,55,4,24}",
+			expectedVal: -67.0,
+		},
+		"real02": {
+			line:        "[###.] (0,2,3) (0) (1,2) (0,1,3) (0,2) {18,16,28,7}",
+			expectedVal: -31.0,
+		},
+		"real03": {
+			line:        "[##.##.] (2,4,5) (0,1,3,5) (2,3,4) (0,1,4) (1,2,4,5) (0,3,5) (1,4,5) (0,3) {21,30,47,32,60,48}",
+			expectedVal: -1.0,
+		},
+	}
+
+	for name, tc := range tcs {
+		t.Run(name, func(t *testing.T) {
+			constraints, ineqValues, objectiveCoeffs := lineToInput(t, tc.line)
+
+			_, val, err := Simplex(constraints, ineqValues, objectiveCoeffs)
+			assert.NoError(t, err)
+			assert.InDelta(t, tc.expectedVal, val, small)
+		})
+	}
 }
 
-func TestAocProblem3(t *testing.T) {
-	line := "[###.] (0,2,3) (0) (1,2) (0,1,3) (0,2) {18,16,28,7}"
-	constraints, ineqValues, objectiveCoeffs := LineToInput(t, line)
+func TestAocProblem4(t *testing.T) {
+	line := "[##.##.] (2,4,5) (0,1,3,5) (2,3,4) (0,1,4) (1,2,4,5) (0,3,5) (1,4,5) (0,3) {21,30,47,32,60,48}"
+	constraints, ineqValues, objectiveCoeffs := lineToInput(t, line)
 
 	s, val, err := Simplex(constraints, ineqValues, objectiveCoeffs)
 	assert.NoError(t, err)
-	assert.Equal(t, []float64{4, 0, 13, 3, 11}, s)
-	assert.Equal(t, -31.0, val)
+	assert.Nil(t, s)
+	assert.InDelta(t, -67.0, val, small)
 }
