@@ -2,7 +2,7 @@ package cups_test
 
 import (
 	"github.com/kieron-dev/adventofcode/2020/cups"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 

@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/kieron-dev/adventofcode/2020/maps"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
